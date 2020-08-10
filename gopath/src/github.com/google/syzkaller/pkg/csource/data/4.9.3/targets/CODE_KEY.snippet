@@ -1,0 +1,3 @@
+s[0] = syscall(__NR_keyctl, 1, "keyring", 0, 0, 0);
+syscall(__NR_keyctl, 5, s[0], 0x3f3f3f3f, 0, 0);
+

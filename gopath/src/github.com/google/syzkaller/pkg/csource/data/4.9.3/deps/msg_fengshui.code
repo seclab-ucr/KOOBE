@@ -1,0 +1,28 @@
+static int msqid_pad;
+char msg_pad[%d - 0x30 +sizeof(long)];
+__attribute__((constructor)) void foo()  {
+    if ((msqid_pad = msgget(IPC_PRIVATE, 0644 | IPC_CREAT)) == -1) {
+        perror("msgget");
+        exit(1);
+    }
+}
+void padding(int start, int num) {
+	int i;
+	size_t size;
+    for (i = start; i < start+num; i++) {
+    	*(long*)msg_pad = 0x5151515151515151 + i;
+        if (msgsnd(msqid_pad, &msg_pad, sizeof(msg_pad) - sizeof(long), 0) == -1) {
+            perror("msgsnd");
+            exit(1);
+        }
+    }
+}
+void release(int index) {
+    if (msgrcv(msqid_pad, (void *) &msg_pad, sizeof(msg_pad) - sizeof(long), 0x5151515151515151+index,
+                MSG_NOERROR | IPC_NOWAIT) == -1) {
+        // if(errno != ENOMSG) {
+        //    perror("msgrcv");
+        //    exit(1);
+        // }
+    }
+}

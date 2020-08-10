@@ -1,0 +1,10 @@
+TITLE: ASan: Unauthorized Access in file_ctor
+
+[  21.8948097] ASan: Unauthorized Access In 0xffffffff80e88b87: Addr 0xffffd58012f95ee8 [8 bytes, write, RedZonePartial]
+[  21.9058826] #0 0xffffffff80e88b87 in file_ctor <netbsd>
+[  21.9058826] #1 0xffffffff80f16f69 in pool_cache_get_slow <netbsd>
+[  21.9058826] #2 0xffffffff80f18fbc in pool_cache_get_paddr <netbsd>
+[  21.9058826] #3 0xffffffff80e8ba24 in fd_allocfile <netbsd>
+[  21.9160732] #4 0xffffffff80f391e5 in pipe1 <netbsd>
+[  21.9160732] #5 0xffffffff80f2f206 in sys_pipe <netbsd>
+[  21.9160732] #6 0xffffffff80265c1e in syscall <netbsd>

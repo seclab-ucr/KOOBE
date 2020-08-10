@@ -1,0 +1,5 @@
+config S2E
+    bool "S2E"
+    default y
+    help
+      Say Y here if you want to enable S2E support.

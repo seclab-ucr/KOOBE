@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sudo chown -R s2e:s2e /home/s2e
+
+chmod +x ./launch.sh
+./launch.sh

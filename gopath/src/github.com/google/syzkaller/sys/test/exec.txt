@@ -1,0 +1,29 @@
+# Copyright 2018 syzkaller project authors. All rights reserved.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+
+syz_mmap(addr vma, len len[addr])
+syz_errno(v int32)
+syz_exit(status int32)
+syz_compare(want ptr[in, string], want_len bytesize[want], got ptr[in, compare_data], got_len bytesize[got])
+syz_compare_int$2(n const[2], v0 intptr, v1 intptr)
+syz_compare_int$3(n const[3], v0 intptr, v1 intptr, v2 intptr)
+syz_compare_int$4(n const[4], v0 intptr, v1 intptr, v2 intptr, v3 intptr)
+
+compare_data [
+	align0	align0
+	bf0	syz_bf_struct0
+	bf1	syz_bf_struct1
+	bf2	syz_bf_struct2
+	bf3	syz_bf_struct3
+	str	string
+	blob	array[int8]
+	arr16be	array[int16be]
+] [varlen]
+
+align0 {
+	f0	int16
+	f1	int32
+	f2	int8
+	f3	int16
+	f4	int64
+}

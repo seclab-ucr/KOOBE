@@ -1,0 +1,23 @@
+#!/bin/bash -
+# This wrappers forces the use of QEMU's CPU definitions
+# as the host CPU might expose a number of features that cause
+# problems for the version of QEMU that is installed on the system.
+
+
+i=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+     -cpu)
+         shift 2;;
+     *)
+        args[i]="$1"
+        (( i++ ))
+        shift ;;
+    esac
+done
+
+if [ "x$LIBGUESTFS_QEMU" = "x" ]; then
+  LIBGUESTFS_QEMU=qemu-system-x86_64
+fi
+
+exec $LIBGUESTFS_QEMU "${args[@]}" -cpu qemu64

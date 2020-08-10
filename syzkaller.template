@@ -1,0 +1,24 @@
+{
+  "target": "linux/amd64",
+  "http": "127.0.0.1:56741",
+  "workdir": "{{WORKDIR}}",
+  "kernel_obj": "{{KERNEL}}",
+  "image": "{{IMAGE}}",
+  "sshkey": "{{KEY}}",
+  "syzkaller": "{{SYZKALLER}}",
+  "procs": 1,
+  "type": "s2e",
+  "enable_syscalls": [
+    {{ENABLE_SYSCALLS}}
+  ],
+  "disable_syscalls": [
+  ],
+  "sandbox": "{{SANDBOX}}",
+  "vm": {
+    "count": 1,
+    "cpu": 1,
+    "mem": 1024,
+    "s2e_project": "{{S2EDIR}}/projects"
+  },
+  "Reproduce": false
+}

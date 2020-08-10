@@ -1,0 +1,589 @@
+diff -ru test/linux-4.14/arch/x86/include/asm/cpufeatures.h linux-4.14/arch/x86/include/asm/cpufeatures.h
+--- test/linux-4.14/arch/x86/include/asm/cpufeatures.h	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/arch/x86/include/asm/cpufeatures.h	2020-01-25 22:28:58.819969385 -0800
+@@ -125,6 +125,7 @@
+ #define X86_FEATURE_CX16	( 4*32+13) /* CMPXCHG16B */
+ #define X86_FEATURE_XTPR	( 4*32+14) /* Send Task Priority Messages */
+ #define X86_FEATURE_PDCM	( 4*32+15) /* Performance Capabilities */
++#define X86_FEATURE_S2E		( 4*32+16) /* S2E support */
+ #define X86_FEATURE_PCID	( 4*32+17) /* Process Context Identifiers */
+ #define X86_FEATURE_DCA		( 4*32+18) /* Direct Cache Access */
+ #define X86_FEATURE_XMM4_1	( 4*32+19) /* "sse4_1" SSE-4.1 */
+diff -ru test/linux-4.14/arch/x86/Kconfig linux-4.14/arch/x86/Kconfig
+--- test/linux-4.14/arch/x86/Kconfig	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/arch/x86/Kconfig	2020-01-25 22:28:58.819969385 -0800
+@@ -2881,3 +2881,5 @@
+ source "arch/x86/kvm/Kconfig"
+ 
+ source "lib/Kconfig"
++
++source "kernel/s2e/Kconfig"
+diff -ru test/linux-4.14/arch/x86/kernel/traps.c linux-4.14/arch/x86/kernel/traps.c
+--- test/linux-4.14/arch/x86/kernel/traps.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/arch/x86/kernel/traps.c	2020-01-25 22:28:58.823969385 -0800
+@@ -61,6 +61,10 @@
+ #include <asm/mpx.h>
+ #include <asm/vm86.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
+ #ifdef CONFIG_X86_64
+ #include <asm/x86_init.h>
+ #include <asm/pgalloc.h>
+@@ -278,6 +282,15 @@
+ 		pr_cont("\n");
+ 	}
+ 
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("TRAP %ld at 0x%lx\n", error_code, task_pt_regs(tsk)->ip);
++#endif
++		s2e_linux_trap(tsk->pid,
++			task_pt_regs(tsk)->ip, trapnr, signr, error_code);
++	}
++#endif
+ 	force_sig_info(signr, info ?: SEND_SIG_PRIV, tsk);
+ }
+ NOKPROBE_SYMBOL(do_trap);
+diff -ru test/linux-4.14/arch/x86/mm/fault.c linux-4.14/arch/x86/mm/fault.c
+--- test/linux-4.14/arch/x86/mm/fault.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/arch/x86/mm/fault.c	2020-01-25 22:28:58.819969385 -0800
+@@ -26,6 +26,10 @@
+ #include <asm/vm86.h>			/* struct vm86			*/
+ #include <asm/mmu_context.h>		/* vma_pkey()			*/
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+ 
+@@ -228,6 +232,17 @@
+ {
+ 	unsigned lsb = 0;
+ 	siginfo_t info;
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("SEGFAULT at 0x%lx\n", task_pt_regs(tsk)->ip);
++#endif
++		s2e_linux_segfault(current->pid,
++			task_pt_regs(tsk)->ip,
++			address,
++			fault);
++	}
++#endif
+ 
+ 	info.si_signo	= si_signo;
+ 	info.si_errno	= 0;
+diff -ru test/linux-4.14/fs/binfmt_elf.c linux-4.14/fs/binfmt_elf.c
+--- test/linux-4.14/fs/binfmt_elf.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/fs/binfmt_elf.c	2020-01-25 22:28:58.819969385 -0800
+@@ -43,6 +43,10 @@
+ #include <linux/uaccess.h>
+ #include <asm/param.h>
+ #include <asm/page.h>
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
+ 
+ #ifndef user_long_t
+ #define user_long_t long
+@@ -52,8 +56,14 @@
+ #endif
+ 
+ static int load_elf_binary(struct linux_binprm *bprm);
++#ifdef CONFIG_S2E
++static unsigned long elf_map(struct file *, unsigned long, struct elf_phdr *,
++			     int, int, unsigned long,
++			     struct S2E_LINUXMON_COMMAND_MEMORY_MAP *);
++#else
+ static unsigned long elf_map(struct file *, unsigned long, struct elf_phdr *,
+-				int, int, unsigned long);
++			     int, int, unsigned long);
++#endif
+ 
+ #ifdef CONFIG_USELIB
+ static int load_elf_library(struct file *);
+@@ -341,9 +351,16 @@
+ 
+ #ifndef elf_map
+ 
++#ifdef CONFIG_S2E
++static unsigned long elf_map(struct file *filep, unsigned long addr,
++			     struct elf_phdr *eppnt, int prot, int type,
++			     unsigned long total_size,
++			     struct S2E_LINUXMON_COMMAND_MEMORY_MAP *mmap_desc)
++#else
+ static unsigned long elf_map(struct file *filep, unsigned long addr,
+-		struct elf_phdr *eppnt, int prot, int type,
+-		unsigned long total_size)
++			     struct elf_phdr *eppnt, int prot, int type,
++			     unsigned long total_size)
++#endif
+ {
+ 	unsigned long map_addr;
+ 	unsigned long size = eppnt->p_filesz + ELF_PAGEOFFSET(eppnt->p_vaddr);
+@@ -372,6 +389,13 @@
+ 	} else
+ 		map_addr = vm_mmap(filep, addr, size, prot, type, off);
+ 
++#ifdef CONFIG_S2E
++	mmap_desc->address = addr;
++	mmap_desc->size = size;
++	mmap_desc->prot = prot;
++	mmap_desc->flag = type;
++	mmap_desc->pgoff = off;
++#endif
+ 	return(map_addr);
+ }
+ 
+@@ -524,9 +548,13 @@
+    is only provided so that we can read a.out libraries that have
+    an ELF header */
+ 
+-static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+-		struct file *interpreter, unsigned long *interp_map_addr,
+-		unsigned long no_base, struct elf_phdr *interp_elf_phdata)
++static unsigned long load_elf_interp(
++#ifdef CONFIG_S2E
++	const char *elf_interpreter,
++#endif
++	struct elfhdr *interp_elf_ex, struct file *interpreter,
++	unsigned long *interp_map_addr, unsigned long no_base,
++	struct elf_phdr *interp_elf_phdata)
+ {
+ 	struct elf_phdr *eppnt;
+ 	unsigned long load_addr = 0;
+@@ -536,7 +564,10 @@
+ 	unsigned long error = ~0UL;
+ 	unsigned long total_size;
+ 	int i;
+-
++#ifdef CONFIG_S2E
++	struct S2E_LINUXMON_PHDR_DESC *elf_phdr = NULL;
++	size_t elf_phdr_size;
++#endif
+ 	/* First of all, some simple consistency checks */
+ 	if (interp_elf_ex->e_type != ET_EXEC &&
+ 	    interp_elf_ex->e_type != ET_DYN)
+@@ -553,8 +584,30 @@
+ 		goto out;
+ 	}
+ 
++#ifdef CONFIG_S2E
++	elf_phdr_size = sizeof(*elf_phdr) * interp_elf_ex->e_phnum;
++	elf_phdr = kmalloc(elf_phdr_size, GFP_KERNEL);
++	if (!elf_phdr) {
++		error = -ENOMEM;
++		goto out;
++	}
++	memset(elf_phdr, 0, elf_phdr_size);
++#endif
++
+ 	eppnt = interp_elf_phdata;
+ 	for (i = 0; i < interp_elf_ex->e_phnum; i++, eppnt++) {
++#ifdef CONFIG_S2E
++		struct S2E_LINUXMON_PHDR_DESC *s2e_ppnt = &elf_phdr[i];
++		s2e_ppnt->index = i;
++		s2e_ppnt->p_type = eppnt->p_type;
++		s2e_ppnt->p_offset = eppnt->p_offset;
++		s2e_ppnt->p_vaddr = eppnt->p_vaddr;
++		s2e_ppnt->p_paddr = eppnt->p_paddr;
++		s2e_ppnt->p_filesz = eppnt->p_filesz;
++		s2e_ppnt->p_memsz = eppnt->p_memsz;
++		s2e_ppnt->p_flags = eppnt->p_flags;
++		s2e_ppnt->p_align = eppnt->p_align;
++#endif
+ 		if (eppnt->p_type == PT_LOAD) {
+ 			int elf_type = MAP_PRIVATE | MAP_DENYWRITE;
+ 			int elf_prot = 0;
+@@ -573,8 +626,16 @@
+ 			else if (no_base && interp_elf_ex->e_type == ET_DYN)
+ 				load_addr = -vaddr;
+ 
++#ifdef CONFIG_S2E
+ 			map_addr = elf_map(interpreter, load_addr + vaddr,
+-					eppnt, elf_prot, elf_type, total_size);
++					   eppnt, elf_prot, elf_type,
++					   total_size, &s2e_ppnt->mmap);
++
++#else
++			map_addr =
++				elf_map(interpreter, load_addr + vaddr, eppnt,
++					elf_prot, elf_type, total_size);
++#endif
+ 			total_size = 0;
+ 			if (!*interp_map_addr)
+ 				*interp_map_addr = map_addr;
+@@ -582,6 +643,9 @@
+ 			if (BAD_ADDR(map_addr))
+ 				goto out;
+ 
++#ifdef CONFIG_S2E
++			s2e_ppnt->vma = map_addr;
++#endif
+ 			if (!load_addr_set &&
+ 			    interp_elf_ex->e_type == ET_DYN) {
+ 				load_addr = map_addr - ELF_PAGESTART(vaddr);
+@@ -647,6 +711,18 @@
+ 	}
+ 
+ 	error = load_addr;
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_printf("elf_interpreter=%s interp_map_addr=%lx "
++			   "elf_entry=%#lx interp_load_addr=%#lx\n",
++			   elf_interpreter, *interp_map_addr, load_addr,
++			   load_addr);
++
++		s2e_linux_module_load(elf_interpreter, current->pid,
++				      interp_elf_ex->e_entry, elf_phdr,
++				      elf_phdr_size);
++	}
++#endif
+ out:
+ 	return error;
+ }
+@@ -684,6 +760,10 @@
+ 	char * elf_interpreter = NULL;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
++#ifdef CONFIG_S2E
++	struct S2E_LINUXMON_PHDR_DESC *elf_phdr = NULL;
++	size_t elf_phdr_size;
++#endif
+ 	unsigned long elf_bss, elf_brk;
+ 	int bss_prot = 0;
+ 	int retval, i;
+@@ -698,6 +778,11 @@
+ 		struct elfhdr interp_elf_ex;
+ 	} *loc;
+ 	struct arch_elf_state arch_state = INIT_ARCH_ELF_STATE;
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_process_load(current->pid, bprm->interp);
++	}
++#endif
+ 	loff_t pos;
+ 
+ 	loc = kmalloc(sizeof(*loc), GFP_KERNEL);
+@@ -724,7 +809,16 @@
+ 	elf_phdata = load_elf_phdrs(&loc->elf_ex, bprm->file);
+ 	if (!elf_phdata)
+ 		goto out;
++#ifdef CONFIG_S2E
++	elf_phdr_size = sizeof(*elf_phdr) * loc->elf_ex.e_phnum;
++	elf_phdr = kmalloc(elf_phdr_size, GFP_KERNEL);
++	if (!elf_phdr) {
++		retval = -ENOMEM;
++		goto out;
++	}
+ 
++	memset(elf_phdr, 0, elf_phdr_size);
++#endif
+ 	elf_ppnt = elf_phdata;
+ 	elf_bss = 0;
+ 	elf_brk = 0;
+@@ -884,6 +978,19 @@
+ 		int elf_prot = 0, elf_flags;
+ 		unsigned long k, vaddr;
+ 		unsigned long total_size = 0;
++#ifdef CONFIG_S2E
++		struct S2E_LINUXMON_PHDR_DESC *s2e_ppnt = &elf_phdr[i];
++		s2e_ppnt->index = i;
++		s2e_ppnt->vma = 0;
++		s2e_ppnt->p_type = elf_ppnt->p_type;
++		s2e_ppnt->p_offset = elf_ppnt->p_offset;
++		s2e_ppnt->p_vaddr = elf_ppnt->p_vaddr;
++		s2e_ppnt->p_paddr = elf_ppnt->p_paddr;
++		s2e_ppnt->p_filesz = elf_ppnt->p_filesz;
++		s2e_ppnt->p_memsz = elf_ppnt->p_memsz;
++		s2e_ppnt->p_flags = elf_ppnt->p_flags;
++		s2e_ppnt->p_align = elf_ppnt->p_align;
++#endif
+ 
+ 		if (elf_ppnt->p_type != PT_LOAD)
+ 			continue;
+@@ -987,14 +1094,23 @@
+ 			}
+ 		}
+ 
++#ifdef CONFIG_S2E
++		error = elf_map(bprm->file, load_bias + vaddr, elf_ppnt,
++				elf_prot, elf_flags, total_size,
++				&s2e_ppnt->mmap);
++#else
+ 		error = elf_map(bprm->file, load_bias + vaddr, elf_ppnt,
+ 				elf_prot, elf_flags, total_size);
++#endif
+ 		if (BAD_ADDR(error)) {
+ 			retval = IS_ERR((void *)error) ?
+ 				PTR_ERR((void*)error) : -EINVAL;
+ 			goto out_free_dentry;
+ 		}
+ 
++#ifdef CONFIG_S2E
++		s2e_ppnt->vma = error;
++#endif
+ 		if (!load_addr_set) {
+ 			load_addr_set = 1;
+ 			load_addr = (elf_ppnt->p_vaddr - elf_ppnt->p_offset);
+@@ -1063,10 +1179,12 @@
+ 	if (elf_interpreter) {
+ 		unsigned long interp_map_addr = 0;
+ 
+-		elf_entry = load_elf_interp(&loc->interp_elf_ex,
+-					    interpreter,
+-					    &interp_map_addr,
+-					    load_bias, interp_elf_phdata);
++		elf_entry = load_elf_interp(
++#ifdef CONFIG_S2E
++			elf_interpreter,
++#endif
++			&loc->interp_elf_ex, interpreter, &interp_map_addr,
++			load_bias, interp_elf_phdata);
+ 		if (!IS_ERR((void *)elf_entry)) {
+ 			/*
+ 			 * load_elf_interp() returns relocation
+@@ -1149,6 +1267,16 @@
+ 	start_thread(regs, elf_entry, bprm->p);
+ 	retval = 0;
+ out:
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !retval) {
++		s2e_linux_module_load(bprm->interp, current->pid,
++				      loc->elf_ex.e_entry, elf_phdr,
++				      elf_phdr_size);
++	}
++
++	if (elf_phdr)
++		kfree(elf_phdr);
++#endif
+ 	kfree(loc);
+ out_ret:
+ 	return retval;
+diff -ru test/linux-4.14/kernel/exit.c linux-4.14/kernel/exit.c
+--- test/linux-4.14/kernel/exit.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/kernel/exit.c	2020-01-25 22:28:58.819969385 -0800
+@@ -68,6 +68,11 @@
+ #include <asm/pgtable.h>
+ #include <asm/mmu_context.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ static void __unhash_process(struct task_struct *p, bool group_dead)
+ {
+ 	nr_threads--;
+@@ -919,6 +924,16 @@
+ 	exit_tasks_rcu_finish();
+ 
+ 	lockdep_free_task(tsk);
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("detected process %s exit with code %ld\n",
++			tsk->comm,
++			tsk->exit_code);
++#endif
++		s2e_linux_process_exit(tsk->pid, tsk->exit_code);
++	}
++#endif
+ 	do_task_dead();
+ }
+ EXPORT_SYMBOL_GPL(do_exit);
+diff -ru test/linux-4.14/kernel/Makefile linux-4.14/kernel/Makefile
+--- test/linux-4.14/kernel/Makefile	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/kernel/Makefile	2020-01-25 22:28:58.819969385 -0800
+@@ -113,6 +113,7 @@
+ 
+ obj-$(CONFIG_HAS_IOMEM) += memremap.o
+ 
++obj-$(CONFIG_S2E) += s2e/
+ $(obj)/configs.o: $(obj)/config_data.h
+ 
+ targets += config_data.gz
+diff -ru test/linux-4.14/kernel/panic.c linux-4.14/kernel/panic.c
+--- test/linux-4.14/kernel/panic.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/kernel/panic.c	2020-01-25 22:28:58.819969385 -0800
+@@ -28,6 +28,10 @@
+ #include <linux/bug.h>
+ #include <linux/ratelimit.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
+ #define PANIC_TIMER_STEP 100
+ #define PANIC_BLINK_SPD 18
+ 
+@@ -172,6 +176,11 @@
+ 	va_start(args, fmt);
+ 	vsnprintf(buf, sizeof(buf), fmt, args);
+ 	va_end(args);
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_kernel_panic(buf, sizeof(buf));
++	}
++#endif
+ 	pr_emerg("Kernel panic - not syncing: %s\n", buf);
+ #ifdef CONFIG_DEBUG_BUGVERBOSE
+ 	/*
+diff -ru test/linux-4.14/kernel/sched/core.c linux-4.14/kernel/sched/core.c
+--- test/linux-4.14/kernel/sched/core.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/kernel/sched/core.c	2020-01-25 22:28:58.819969385 -0800
+@@ -39,6 +39,9 @@
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/sched.h>
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
+ 
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
+ 
+@@ -2790,6 +2793,14 @@
+ 	switch_to(prev, next, prev);
+ 	barrier();
+ 
++#ifdef CONFIG_S2E
++	/*
++	 * Save a copy of the current task so that S2E can access it.
++	 *
++	 * NOTE: This is not multi-CPU safe!
++	 */
++	 s2e_current_task = current;
++#endif
+ 	return finish_task_switch(prev);
+ }
+ 
+diff -ru test/linux-4.14/lib/Kconfig.debug linux-4.14/lib/Kconfig.debug
+--- test/linux-4.14/lib/Kconfig.debug	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/lib/Kconfig.debug	2020-01-25 22:28:58.819969385 -0800
+@@ -437,6 +437,10 @@
+ 	  Say Y here if you are developing drivers or trying to debug and
+ 	  identify kernel problems.
+ 
++config DEBUG_S2E
++    bool "S2E debugging"
++    help
++    Say Y here if you are trying to debug the S2E Linux monitor.
+ menu "Memory Debugging"
+ 
+ source mm/Kconfig.debug
+diff -ru test/linux-4.14/mm/mmap.c linux-4.14/mm/mmap.c
+--- test/linux-4.14/mm/mmap.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/mm/mmap.c	2020-01-25 22:28:58.819969385 -0800
+@@ -44,6 +44,9 @@
+ #include <linux/userfaultfd_k.h>
+ #include <linux/moduleparam.h>
+ #include <linux/pkeys.h>
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
+ #include <linux/oom.h>
+ 
+ #include <linux/uaccess.h>
+@@ -2497,6 +2500,11 @@
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_unmap(current->pid, start, end);
++	}
++#endif
+ }
+ 
+ /*
+diff -ru test/linux-4.14/mm/mprotect.c linux-4.14/mm/mprotect.c
+--- test/linux-4.14/mm/mprotect.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/mm/mprotect.c	2020-01-25 22:28:58.819969385 -0800
+@@ -33,6 +33,9 @@
+ #include <asm/tlbflush.h>
+ 
+ #include "internal.h"
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
+ 
+ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
+ 		unsigned long addr, unsigned long end, pgprot_t newprot,
+@@ -512,7 +515,15 @@
+ SYSCALL_DEFINE3(mprotect, unsigned long, start, size_t, len,
+ 		unsigned long, prot)
+ {
+-	return do_mprotect_pkey(start, len, prot, -1);
++	int ret = do_mprotect_pkey(start, len, prot, -1);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !ret) {
++		s2e_linux_mprotect(current->pid, start, len, prot);
++	}
++#endif
++	return ret;
++
+ }
+ 
+ #ifdef CONFIG_ARCH_HAS_PKEYS
+@@ -520,7 +531,15 @@
+ SYSCALL_DEFINE4(pkey_mprotect, unsigned long, start, size_t, len,
+ 		unsigned long, prot, int, pkey)
+ {
+-	return do_mprotect_pkey(start, len, prot, pkey);
++	int ret = do_mprotect_pkey(start, len, prot, pkey);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !ret) {
++		s2e_linux_mprotect(current->pid, start, len, prot);
++	}
++#endif
++	return ret;
++
+ }
+ 
+ SYSCALL_DEFINE2(pkey_alloc, unsigned long, flags, unsigned long, init_val)
+diff -ru test/linux-4.14/mm/util.c linux-4.14/mm/util.c
+--- test/linux-4.14/mm/util.c	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/mm/util.c	2020-01-25 22:28:58.819969385 -0800
+@@ -18,6 +18,9 @@
+ #include <asm/sections.h>
+ #include <linux/uaccess.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
+ #include "internal.h"
+ 
+ static inline int is_kernel_rodata(unsigned long addr)
+@@ -337,6 +340,11 @@
+ 		if (populate)
+ 			mm_populate(ret, populate);
+ 	}
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && (ret != -1)) {
++		s2e_linux_mmap(current->pid, ret, len, prot, flag, pgoff);
++	}
++#endif
+ 	return ret;
+ }
+ 
+diff -ru test/linux-4.14/tools/arch/x86/include/asm/cpufeatures.h linux-4.14/tools/arch/x86/include/asm/cpufeatures.h
+--- test/linux-4.14/tools/arch/x86/include/asm/cpufeatures.h	2017-11-12 10:46:13.000000000 -0800
++++ linux-4.14/tools/arch/x86/include/asm/cpufeatures.h	2020-01-25 22:28:58.819969385 -0800
+@@ -125,6 +125,7 @@
+ #define X86_FEATURE_CX16	( 4*32+13) /* CMPXCHG16B */
+ #define X86_FEATURE_XTPR	( 4*32+14) /* Send Task Priority Messages */
+ #define X86_FEATURE_PDCM	( 4*32+15) /* Performance Capabilities */
++#define X86_FEATURE_S2E		( 4*32+16) /* S2E support */
+ #define X86_FEATURE_PCID	( 4*32+17) /* Process Context Identifiers */
+ #define X86_FEATURE_DCA		( 4*32+18) /* Direct Cache Access */
+ #define X86_FEATURE_XMM4_1	( 4*32+19) /* "sse4_1" SSE-4.1 */

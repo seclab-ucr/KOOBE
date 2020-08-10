@@ -1,0 +1,17 @@
+# Cache objects
+packer_cache/
+
+# For built boxes
+*.box
+
+output-*/
+tmp-output
+output
+*.deb
+*.swp
+
+# qtcreator files
+linux.config
+linux.creator
+linux.includes
+linux.files

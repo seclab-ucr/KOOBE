@@ -1,0 +1,17 @@
+{
+  "target": "kmalloc_192",
+  "version": "4.9.3",
+  "size": 192,
+  "allocator": "kmalloc_192",
+  "name": "kmalloc_192",
+  "define": "",
+  "deref": "do_allocKey();\n",
+  "dependence": [
+    "do_allocKey",
+    "do_mmap"
+  ],
+  "num": 1,
+  "pre_object": 1,
+  "post_object": 0,
+  "_comment": "After overwriting the slab next pointer, we allocate a key struct to take over the memory region where we have full control"
+}

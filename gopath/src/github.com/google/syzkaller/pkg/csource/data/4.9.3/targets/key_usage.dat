@@ -1,0 +1,15 @@
+{
+  "target": "key_usage",
+  "version": "4.9.3",
+  "size": 192,
+  "allocator": "kmalloc_192",
+  "name": "key",
+
+  "define": "[[CODE_KEY]]",
+  "deref": "[[CODE_KEYRING]]",
+  "dependence": ["do_keyspray"],
+  "num": 1,
+  "pre_object": 1,
+  "post_object": 0,
+  "_comment": "allocate a key object and then overwrite its reference counter, later we can trigger UAF which requires to do heap spray to overwrite the function pointer."
+}

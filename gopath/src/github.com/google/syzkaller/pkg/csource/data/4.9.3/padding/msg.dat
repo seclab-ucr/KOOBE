@@ -1,0 +1,8 @@
+{
+  "allocator": "kmalloc",
+  "size": 0,
+  "varlen": true,
+  "define": "[[SNIPPET_MSG]]",
+  "name": "do_msg_padding",
+  "priority": 0
+}

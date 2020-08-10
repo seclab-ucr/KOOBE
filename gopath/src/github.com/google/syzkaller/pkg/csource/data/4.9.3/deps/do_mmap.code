@@ -1,0 +1,4 @@
+__attribute__((constructor)) void do_mmap() {
+	syscall(__NR_mmap, %s, 0x2000, 0x7, 0x32, -1, 0);
+}
+

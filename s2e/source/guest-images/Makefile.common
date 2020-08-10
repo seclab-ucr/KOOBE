@@ -1,0 +1,142 @@
+# Copyright (c) 2017, Cyberhaven
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+ifeq ("$(OUTDIR)","")
+SRC := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+endif
+
+### Beginning of user-adjustable variables ###
+
+# Set this to 1 in order to build intermediate images.
+# This is useful to debug image building as it makes building more granular
+# and an error in one step does not force to restart from scratch. For example,
+# a mistake in a final script would not force re-intalling all windows updates.
+DEBUG_INTERMEDIATE_RULES ?=
+
+# Override these two variables with your actual settings
+S2E_INSTALL_ROOT ?=
+S2E_LINUX_KERNELS_ROOT ?=
+
+# Comment out this variable to enable graphic output
+GRAPHICS ?= -nographic -monitor null
+
+# If your host does not support KVM, comment out this variable.
+# Image creation will take much longer.
+QEMU_KVM ?= -enable-kvm
+
+# Port of the FTP server running on localhost.
+# Guest VMs connect to that FTP server to upload their files (guestfs).
+QEMU_FTP_PORT ?= 1234
+
+# Where to store final images
+ifeq ("$(OUTDIR)","")
+OUTDIR := $(shell pwd)/output
+endif
+
+# Location of ISO files for Windows images
+ifeq ("$(ISODIR)","")
+ISODIR := $(shell pwd)/iso
+endif
+
+# Location of the latest guest-images release
+GUEST_IMAGES_RELEASE_URL = https://github.com/S2E/guest-images/releases/download/v2.0.0
+
+### End of user-adjustable variables ###
+
+_INFO_MSG_COLOR := $(shell tput setaf 3)
+_OK_MSG_COLOR := $(shell tput setaf 2)
+_NO_COLOR := $(shell tput sgr0)
+
+INFO_MSG = @echo "$(_INFO_MSG_COLOR)[`date`] $1$(_NO_COLOR)"
+OK_MSG = @echo "$(_OK_MSG_COLOR)[`date`] $1$(_NO_COLOR)"
+
+TMPDIR := $(shell pwd)/.tmp-output
+STAMPS := $(shell pwd)/.stamps
+
+QEMU_IMG = $(S2E_INSTALL_ROOT)/bin/qemu-img
+QEMU64 = $(S2E_INSTALL_ROOT)/bin/qemu-system-x86_64
+
+GET_SETTING = $(shell $(SRC)/scripts/get_setting.py -d $(SRC)/images.json -n $(1) -s $(2))
+GET_APP_SETTING = $(shell jq -e -r $(1) $(SRC)/apps.json)
+ISO_URL = $(call GET_SETTING,$(1),iso.url)
+
+ARCH = $(word 3, $(subst -, ,$(shell basename $(1))))
+OS_ARCH = $(call GET_SETTING,$(1),os.arch)
+OS_VERSION = $(call GET_SETTING,$(1),os.version)
+OS_NAME = $(call GET_SETTING,$(1),os.name)
+DISK_SIZE ?= $(call GET_SETTING,$(1),hw.default_disk_size)
+SNAPSHOT_SIZE ?= $(call GET_SETTING,$(1),hw.default_snapshot_size)
+NIC ?= $(call GET_SETTING,$(1),hw.nic)
+CPU ?= $(call GET_SETTING,$(1),hw.cpu)
+
+GETQEMU = $(S2E_INSTALL_ROOT)/bin/qemu-system-$(call OS_ARCH,$(1))
+GETLIBS2E = $(S2E_INSTALL_ROOT)/share/libs2e/libs2e-$(call OS_ARCH,$(1)).so
+
+QEMU_HD = -drive if=ide,index=$(1),file=$(2),format=raw,cache=writeback
+QEMU_HD_S2E = -drive if=ide,index=$(1),file=$(2),format=s2e,cache=writeback
+QEMU_CD = -drive if=ide,index=$(1),file=$(2),media=cdrom
+QEMU_NIC = -net none -net nic,model=$(1)
+QEMU_CPU = $(if $(1),-cpu $(1))
+
+# This is used to create a variable name out of an image name and a suffix
+# We need to replace the - with _ and assume that the image name does not contain
+# any special characters that would be illegal for a variable name.
+TO_VAR = $(subst -,_,$(1))_$(2)
+
+TO_VAR_CPU = $(call QEMU_CPU,$($(call TO_VAR,$(1),CPU)))
+TO_VAR_NIC = $(call QEMU_NIC,$($(call TO_VAR,$(1),NIC)))
+TO_VAR_DISK_SIZE = $($(call TO_VAR,$(1),DISK_SIZE))
+TO_VAR_OS_VERSION = $($(call TO_VAR,$(1),OS_VERSION))
+TO_VAR_SNAPSHOT_SIZE = $($(call TO_VAR,$(1),SNAPSHOT_SIZE))
+
+GUEST_TOOLS32_ROOT = $(S2E_INSTALL_ROOT)/bin/guest-tools32
+GUEST_TOOLS64_ROOT = $(S2E_INSTALL_ROOT)/bin/guest-tools64
+GET_GUEST_TOOLS = $(if $(findstring $(call OS_ARCH,$(1)),i386),$(GUEST_TOOLS32_ROOT),$(GUEST_TOOLS64_ROOT))
+
+# Location of downloaded Windows guest tools
+# (e.g., runtimes, apps, etc.)
+WINDOWS_APPS_DIR ?= $(TMPDIR)/win_apps
+
+export LIBGUESTFS_HV := $(SRC)/qemu.wrapper
+
+# Use our own QEMU for libguestfs, as the one that comes with the system may crash
+# when used inside vmware with nested virtualization enabled.
+export LIBGUESTFS_QEMU := $(S2E_INSTALL_ROOT)/bin/qemu-system-x86_64
+
+
+### Building archives ###
+# Note: pxz has a bug when run with unlimited stack size (which is the case in a makefile)
+$(OUTDIR)/%.tar.xz: $(OUTDIR)/%/image.json
+	$(call INFO_MSG,[$@] Creating image archive...)
+	cd $(OUTDIR) &&  bash -c 'ulimit -s 8192; tar -I pxz -cf "$(shell basename $@)" "$(shell basename $(shell dirname $<))"'
+
+define IMAGE_RULE
+  $1: $(OUTDIR)/$1/image.json
+endef
+
+define IMAGE_APP_RULE
+  $1/$2: $(OUTDIR)/$1/$2/image.json
+endef
+
+$(WINDOWS_APPS_DIR) $(OUTDIR) $(TMPDIR):
+	mkdir -p $@
+
+WGET = wget --no-use-server-timestamps -O
+GET_ISO = $(SRC)/scripts/get_iso.sh

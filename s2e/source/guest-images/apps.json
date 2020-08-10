@@ -1,0 +1,74 @@
+{
+  "version": 3,
+  "apps": {
+    "office2019": {
+      "name": "Microsoft Office 2019 32-bit",
+      "iso": {
+        "name": "office2019.iso",
+        "sha1": ""
+      },
+      "base_images": [
+        "windows-10pro1909-x86_64"
+      ],
+      "scripts_dir": "50_office",
+      "image_groups": ["office", "office2019"],
+      "file_types": {
+        "word": ["rtf", "doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
+        "excel": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm", "xlsb", "xla", "xlam", "xll", "xlw"],
+        "powerpoint": ["ppt", "pot", "pps", "pptx", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm"]
+      }
+    },
+    "office2016": {
+      "name": "Microsoft Office 2016 32-bit",
+      "iso": {
+        "name": "en_office_professional_plus_2016_x86_x64_dvd_6962141.iso",
+        "sha1": ""
+      },
+      "base_images": [
+        "windows-10pro1909-x86_64", "windows-7sp1ent-x86_64", "windows-7sp1pro-i386"
+      ],
+      "scripts_dir": "50_office",
+      "image_groups": ["office", "office2016"],
+      "file_types": {
+        "word": ["rtf", "doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
+        "excel": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm", "xlsb", "xla", "xlam", "xll", "xlw"],
+        "powerpoint": ["ppt", "pot", "pps", "pptx", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm"]
+      }
+    },
+    "office2013": {
+      "name": "Microsoft Office 2013 32-bit",
+      "iso": {
+        "name": "en_office_professional_plus_2013_with_sp1_x86_and_x64_dvd_3928186.iso",
+        "sha1": ""
+      },
+      "base_images": [
+        "windows-10pro1909-x86_64", "windows-7sp1ent-x86_64", "windows-7sp1pro-i386"
+      ],
+      "scripts_dir": "50_office",
+      "image_groups": ["office", "office2013"],
+      "file_types": {
+        "word": ["rtf", "doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
+        "excel": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm", "xlsb", "xla", "xlam", "xll", "xlw"],
+        "powerpoint": ["ppt", "pot", "pps", "pptx", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm"]
+      }
+    },
+    "office2010": {
+      "name": "Microsoft Office 2010 32-bit",
+      "iso": {
+        "name": "en_office_professional_plus_2010_x86_515486.iso",
+        "sha1": ""
+      },
+      "product_key": "",
+      "base_images": [
+        "windows-10pro1909-x86_64", "windows-7sp1ent-x86_64", "windows-7sp1pro-i386", "windows-xpsp3pro-i386"
+      ],
+      "scripts_dir": "50_office",
+      "image_groups": ["office", "office2010"],
+      "file_types": {
+        "word": ["rtf", "doc", "dot", "docx", "docm", "dotx", "dotm", "docb"],
+        "excel": ["xls", "xlt", "xlm", "xlsx", "xlsm", "xltx", "xltm", "xlsb", "xla", "xlam", "xll", "xlw"],
+        "powerpoint": ["ppt", "pot", "pps", "pptx", "pptm", "potx", "potm", "ppam", "ppsx", "ppsm", "sldx", "sldm"]
+      }
+    }
+  }
+}

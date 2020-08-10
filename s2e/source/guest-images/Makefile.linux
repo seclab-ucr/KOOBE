@@ -1,0 +1,210 @@
+# Copyright (c) 2017, Cyberhaven
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+### Check that required variables are setup properly
+
+ifeq ("$(wildcard $(S2E_LINUX_KERNELS_ROOT)/linux-4.9.3/config-i386)","")
+$(error $(S2E_LINUX_KERNELS_ROOT)/linux-4.9.3/config-i386 does not exist. Make sure S2E_LINUX_KERNELS_ROOT is set properly)
+endif
+
+
+### Provisioning the initial image ###
+
+define TEMPLATE_BASE_LINUX_IMAGE
+ $(OUTDIR)/$1: | $(OUTDIR)
+ $(TMPDIR)/$1: | $(TMPDIR)
+	mkdir -p "$$@"
+
+ $(TMPDIR)/$1/$1.iso: | $(TMPDIR)/$1
+	$(call INFO_MSG,[$$@] Downloading disk image...)
+	cd $(TMPDIR)/$1 && $(GET_ISO) $(call ISO_URL,$(1)) $$@
+
+ $(TMPDIR)/$1/install_files.iso: $(TMPDIR)/$1/$1.iso $(SRC)/Linux/bootcd/preseed.cfg
+	$(call INFO_MSG,[$$@] Creating installation disk...)
+	rm -Rf $(TMPDIR)/$1/install_files && mkdir -p $(TMPDIR)/$1/install_files
+	7z x $(TMPDIR)/$1/$1.iso -o$(TMPDIR)/$1/install_files
+
+	cd $(TMPDIR)/$1 && chmod -R u+rwx install_files
+
+	cp "$(SRC)/Linux/bootcd/preseed.cfg" "$(TMPDIR)/$1/install_files"
+	cp "$(SRC)/Linux/bootcd/isolinux.cfg" "$(TMPDIR)/$1/install_files/isolinux/"
+	cp "$(SRC)/Linux/bootcd/txt-$(call ARCH,$1).cfg" "$(TMPDIR)/$1/install_files/isolinux/txt.cfg"
+
+	cd $(TMPDIR)/$1/install_files && \
+		md5sum `find -follow -type f` > md5sum.txt
+
+	genisoimage -o "$$@" -r -J -no-emul-boot -boot-load-size 4 \
+		-boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat "$(TMPDIR)/$1/install_files"
+
+  $(TMPDIR)/$1/image.raw: $(TMPDIR)/$1/install_files.iso
+	$(call INFO_MSG,[$$@] Creating disk image...)
+	$(QEMU_IMG) create -f raw $$@ $(call DISK_SIZE,$1)
+
+	$(call INFO_MSG,[$$@] Running initial setup...)
+	# Note: install the image using default KVM CPU because the stock
+	# kernel may not support the required CPU flags (e.g., pentium,-nommx).
+	# The custom S2E kernel will work though.
+	$(QEMU64) -m 1G -no-reboot $(GRAPHICS) $(QEMU_KVM) \
+	    $(call QEMU_HD,0,$$@) \
+	    -cdrom $(TMPDIR)/$1/install_files.iso \
+	    -serial file:$(TMPDIR)/$1/serial.txt
+endef
+
+### Installing the kernel and S2E payload ###
+
+define BUILD_S2E_IMAGE
+  $(OUTDIR)/$2$1/image.raw.s2e: $(TMPDIR)/$1/image.raw $(STAMPS)/$3 \
+                                $(SRC)/Linux/s2e_home/launch.sh $(SRC)/Linux/s2e_home/.bash_login \
+                                $(SRC)/Linux/override.conf
+
+	mkdir -p $$(shell dirname $$@)
+	cp --reflink=auto "$$<" "$$@"
+
+	$(call INFO_MSG,[$$@] Installing kernels...)
+	virt-copy-in -a "$$@" $(TMPDIR)/$3/*.deb /home/s2e
+
+	$(call INFO_MSG,[$$@] Installing payload...)
+	virt-copy-in -a "$$@" $(SRC)/Linux/s2e_home/launch.sh $(SRC)/Linux/s2e_home/.bash_login /home/s2e/
+
+	guestfish --rw -a "$$@" -i mkdir /etc/systemd/system/getty@tty1.service.d/
+	virt-copy-in -a "$$@" $(SRC)/Linux/override.conf /etc/systemd/system/getty@tty1.service.d/
+
+	$(call INFO_MSG,[$$@] Booting disk image...)
+	$(QEMU64) -m 1G -no-reboot $(GRAPHICS) $(QEMU_KVM) \
+	    $(call QEMU_HD,0,$$@) \
+	    -serial file:$(OUTDIR)/$2$1/serial.txt
+
+	virt-copy-in -a "$$@" $(S2E_INSTALL_ROOT)/bin/guest-tools32/* /home/s2e/
+
+  # This rule extracts all executable files from the guest image into the guestfs folder.
+  # This is useful for S2E plugins that need access to the binaries in order to extract
+  # information from them (e.g., import or export tables).
+  $(OUTDIR)/$2$1/guestfs: $(OUTDIR)/$2$1/image.raw.s2e
+	rm -Rf $$@ && mkdir -p $$@
+	$(call INFO_MSG,[$1] Extracting guestfs...)
+
+	@# First copy out all the files from the image
+	@# Unmount any previous folders (e.g., if interrupted)
+	-fusermount -u $(OUTDIR)/$2$1/imagefs
+	mkdir -p $(OUTDIR)/$2$1/imagefs
+
+	# TODO: rsync only executable files
+	cd $(OUTDIR)/$2$1 && trap 'fusermount -u imagefs && rmdir imagefs' EXIT && \
+	    guestmount --ro -i -a image.raw.s2e imagefs && \
+	    rsync --links -rt --exclude '*.deb' imagefs/* guestfs
+
+	# Some files might not have read privileges, add them here
+	chmod -R u+r $(OUTDIR)/$2$1/guestfs
+
+	$(call OK_MSG,[$1] Guestfs extraction completed.)
+
+  # Copy the kernel that has debug info into the guestfs
+  $(OUTDIR)/$2$1/guestfs/vmlinux: $(OUTDIR)/$2$1/guestfs
+	cp "$(TMPDIR)/$3/"*/vmlinux "$$@"
+endef
+
+
+
+### Snapshot creation ###
+
+define TAKE_SNAPSHOT
+  $(OUTDIR)/$2$1/image.raw.s2e.ready: $(OUTDIR)/$2$1/image.raw.s2e
+	$(call INFO_MSG,[$$@] Creating snapshot...)
+	LD_PRELOAD=$(call GETLIBS2E,$1) $(call GETQEMU,$1) -enable-kvm \
+	    $(call QEMU_HD_S2E,0,$$<) \
+	    -serial file:$(OUTDIR)/$2$1/serial_ready.txt -enable-serial-commands \
+	    $(call QEMU_NIC,$(call NIC,$2$1)) $(call QEMU_CPU,$(call CPU,$2$1)) \
+	    -m $(call SNAPSHOT_SIZE,$2$1) \
+	    $(GRAPHICS)
+
+  $(OUTDIR)/$2$1/image.json: $(OUTDIR)/$2$1/image.raw.s2e.ready $(OUTDIR)/$2$1/guestfs $(OUTDIR)/$2$1/guestfs/vmlinux \
+                             $(SRC)/images.json $(SRC)/scripts/generate_image_descriptor.py
+
+	$(call INFO_MSG,[$$@] Creating image descriptor...)
+	$(SRC)/scripts/generate_image_descriptor.py -i $(SRC)/images.json -o $$@ -n "$2$1" \
+		snapshot="ready" qemu_build="$(call ARCH,$2$1)" \
+		memory="$(call SNAPSHOT_SIZE,$2$1)" \
+		qemu_extra_flags="$(call QEMU_NIC,$(call NIC,$2$1)) $(call QEMU_CPU,$(call CPU,$2$1))"
+endef
+
+### Building Linux kernel ###
+
+# We need a special docker image to build the decree kernel.
+# Its docker file ends with i386cgc, so we grep the image name for cgc
+# and paste what we find to the architecture in order to build
+# the right docker image.
+CGCARCH=$(findstring cgc,$(1))
+
+# This creates the base docker image inside which the kernel will be built
+$(STAMPS)/linux-build-%:
+	$(call INFO_MSG,[$@] Building docker image...)
+	mkdir -p $(STAMPS)
+	cd $(SRC)/Linux/docker && docker build -t linux-build-$(call ARCH,$@) -f Dockerfile.$(call ARCH,$@) .
+	touch $@
+
+# Build the kernel
+define TEMPLATE_LINUX_KERNEL
+  $(STAMPS)/$1-$2: $(STAMPS)/linux-build-$2$(call CGCARCH,$1) | $(TMPDIR)
+	$(call INFO_MSG,[$$@] Building kernel...)
+	rsync -a $(S2E_LINUX_KERNELS_ROOT)/$1 $(TMPDIR)/$1-$2
+	cd $(TMPDIR)/$1-$2/$1 && mv config-$2 .config
+
+	# Remove old builds
+	rm -rf $(TMPDIR)/$1-$2/*.deb
+
+	$(SRC)/Linux/docker/run-docker.sh $(SRC) $(S2E_LINUX_KERNELS_ROOT) linux-build-$2$(call CGCARCH,$1) \
+	    $(TMPDIR)/$1-$2/$1 \
+	    $(SRC)/Linux/docker/make-kernel.sh \
+	       $(S2E_LINUX_KERNELS_ROOT)/include $(shell id -u) $(shell id -g)
+	touch $$@
+endef
+
+
+### Instantiating all build configurations ###
+LINUX_IMAGES = debian-9.2.1-i386 debian-9.2.1-x86_64 cgc_debian-9.2.1-i386
+LINUX_ARCHIVES=$(addsuffix .tar.xz,$(addprefix $(OUTDIR)/,$(LINUX_IMAGES)))
+
+# The cgc linux image uses an existing base image
+$(foreach os,$(LINUX_IMAGES), \
+  $(if $(findstring cgc,$(os)),,$(eval $(call TEMPLATE_BASE_LINUX_IMAGE,$(os)))) \
+  $(eval $(call IMAGE_RULE,$(os))) \
+)
+
+# Rules for building the kernels
+$(eval $(call TEMPLATE_LINUX_KERNEL,decree-cgc-cfe,i386))
+$(eval $(call TEMPLATE_LINUX_KERNEL,linux-4.9.3,i386))
+$(eval $(call TEMPLATE_LINUX_KERNEL,linux-4.9.3,x86_64))
+
+# Rules for building different images
+# TODO: cgc image is treated in an adhoc manner, try to factor it out somehow
+$(eval $(call BUILD_S2E_IMAGE,debian-9.2.1-i386,cgc_,decree-cgc-cfe-i386))
+$(eval $(call TAKE_SNAPSHOT,debian-9.2.1-i386,cgc_))
+
+$(eval $(call BUILD_S2E_IMAGE,debian-9.2.1-i386,,linux-4.9.3-i386))
+$(eval $(call TAKE_SNAPSHOT,debian-9.2.1-i386,))
+
+$(eval $(call BUILD_S2E_IMAGE,debian-9.2.1-x86_64,,linux-4.9.3-x86_64))
+$(eval $(call TAKE_SNAPSHOT,debian-9.2.1-x86_64,))
+
+### Top level rules ###
+
+linux: $(LINUX_IMAGES)
+linux_archives: $(LINUX_ARCHIVES)
+all-kernels: $(STAMPS)/decree-cgc-cfe-i386 $(STAMPS)/linux-4.9.3-i386 $(STAMPS)/linux-4.9.3-x86_64

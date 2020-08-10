@@ -1,0 +1,4 @@
+UBUNTU: SAUCE: (no-up) Bluetooth: Implement broadcom patchram firmware loader
+UBUNTU: SAUCE: (no-up) Bluetooth: Add support for 13d3:3388 and 13d3:3389
+UBUNTU: SAUCE: (no-up) mac80211_hwsim: Register and bind to driver
+UBUNTU: SAUCE: AppArmor: basic networking rules

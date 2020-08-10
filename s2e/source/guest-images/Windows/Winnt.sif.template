@@ -1,0 +1,79 @@
+;SetupMgrTag
+[Data]
+    AutoPartition=1
+    MsDosInitiated="0"
+    UnattendedInstall="Yes"
+
+[Unattended]
+    UnattendMode=FullUnattended
+    OemSkipEula=Yes
+    OemPreinstall=No
+    TargetPath=\WINDOWS
+    Repartition=Yes
+    WaitForReboot="No"
+    UnattendSwitch="Yes"
+
+[Display]
+    AutoConfirm=1
+
+[GuiUnattended]
+    AdminPassword="s2e"
+    EncryptedAdminPassword=NO
+    AutoLogon=Yes
+    AutoLogonCount=99999
+    OEMSkipRegional=1
+    TimeZone=35
+    OemSkipWelcome=1
+
+[UserData]
+    ProductKey={{os.product_key}}
+    FullName="S2E"
+    OrgName="S2E"
+    ComputerName="S2E-GUEST"
+
+[LicenseFilePrintData]
+    AutoMode=PerServer
+    AutoUsers=5
+
+[Identification]
+    JoinWorkgroup=WORKGROUP
+
+[Networking]
+    InstallDefaultComponents=Yes
+
+[WindowsFirewall]
+    Profiles = WindowsFirewall.TurnOffFirewall
+
+[WindowsFirewall.TurnOffFirewall]
+    Mode = 0
+
+[GUIRunOnce]
+    "cmd /C e:\launch.bat"
+
+[Components]
+    msmsgs=off
+    msnexplr=off
+    freecell=off
+    hearts=off
+    minesweeper=off
+    pinball=off
+    solitaire=off
+    spider=off
+    zonegames=off
+    msnexplr=off
+    AutoUpdate=off
+    Deskpaper=off
+
+[Shell]
+    DefaultStartPanelOff = Yes
+    DefaultThemesOff = Yes
+
+[SystemRestore]
+    DisableSR=1
+    CreateFirstRunRp=0
+
+[Display]
+    BitsPerPel=24
+    Xresolution=1024
+    YResolution=768
+    Vrefresh=60

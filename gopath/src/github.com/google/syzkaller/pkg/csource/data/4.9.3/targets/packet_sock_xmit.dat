@@ -1,0 +1,15 @@
+{
+  "target": "packet_sock_xmit",
+  "version": "4.9.3",
+  "size": 2048,
+  "allocator": "kmalloc_2048",
+  "name": "packet_sock",
+
+  "define": "[[CODE_SOCKET]]",
+  "deref": "[[CODE_SOCKET_XMIT]]",
+  "dependence": [],
+  "num": 0,
+  "pre_object": 0,
+  "post_object": 0,
+  "_comment": "We can allocate multiple sockets to increase the success rate. When sento is invoked, it could trigger a function pointer dereference."
+}

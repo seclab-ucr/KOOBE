@@ -1,0 +1,7 @@
+*.swp
+*~
+*.cfg
+workdir*
+.vscode
+
+bin/

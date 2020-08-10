@@ -1,0 +1,27 @@
+<Configuration Product="ProPlus">
+
+    <Display Level="basic" CompletionNotice="no" SuppressModal="yes" AcceptEula="yes" />
+
+    <USERNAME Value="Customer" />
+
+    <COMPANYNAME Value="MyCompany" />
+
+    <INSTALLLOCATION Value="%programfiles%\Microsoft Office" />
+
+    {% if product_key != '' %}
+    <PIDKEY Value="{{product_key}}" />
+    {% endif %}
+
+    <!-- <LIS CACHEACTION="CacheOnly" /> -->
+
+    <!-- <SOURCELIST Value="\\server1\share\Office12;\\server2\share\Office12" /> -->
+
+    <!-- <DistributionPoint Location="\\server\share\Office12" /> -->
+
+    <!-- <OptionState Id="OptionID" State="absent" Children="force" /> -->
+
+    <!-- <Setting Id="Reboot" Value="IfNeeded" /> -->
+
+    <!-- <Command Path="msiexec.exe" Args="/i \\server\share\my.msi" QuietArg="/q" ChainPosition="after" Execute="install" /> -->
+
+</Configuration>

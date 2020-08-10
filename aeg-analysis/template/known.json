@@ -1,0 +1,7 @@
+{"target": {
+  "key": ["usage"], 
+  "ip_mc_socklist": ["next_rcu"], 
+  "tcp_sock": ["sk_destruct"], 
+  "fsnotify_group": ["ops"], 
+  "packet_sock": ["sk_destruct", "xmit"]
+}}

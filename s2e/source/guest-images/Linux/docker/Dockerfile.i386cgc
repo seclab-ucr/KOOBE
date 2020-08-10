@@ -1,0 +1,48 @@
+# Copyright (c) 2017, Cyberhaven
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# This is an i386 image of debian
+# Use it to compile the cgc kernel, which needs an older debian image
+# docker build -t linux-build-i386cgc -f Dockerfile.i386cgc .
+#
+# You can run commands in the docker image using the host's user id like this:
+# docker run -ti --rm -w $(pwd) -v $HOME:$HOME linux-build-i386cgc /run_as.sh $(id -u) $(id -g) /bin/bash
+# Changes in $HOME will be persisted.
+
+FROM i386/debian:jessie
+
+MAINTAINER Vitaly Chipounov <vitaly@cyberhaven.io>
+
+RUN                                                                             \
+    apt-get update &&                                                           \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends   \
+    sudo apt-file texinfo flex bison patch python unzip git bc parallel         \
+    bzip2 wget less nano g++ gcc file libc6-dev make                            \
+    fakeroot build-essential devscripts libncurses5-dev ca-certificates &&      \
+    apt-get clean && \
+    apt-file update
+
+COPY install-cgc.sh /root
+RUN cd /root && /root/install-cgc.sh
+RUN touch /etc/decree_version
+
+COPY run_as.sh /
+
+ENTRYPOINT ["/bin/bash"]

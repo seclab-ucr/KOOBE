@@ -1,0 +1,22 @@
+* AHCI SATA Controller
+
+SATA nodes are defined to describe on-chip Serial ATA controllers.
+Each SATA controller should have its own node.
+
+Required properties:
+- compatible        : compatible list, contains "snps,spear-ahci"
+- interrupts        : <interrupt mapping for SATA IRQ>
+- reg               : <registers mapping>
+
+Optional properties:
+- dma-coherent      : Present if dma operations are coherent
+- clocks            : a list of phandle + clock specifier pairs
+- target-supply     : regulator for SATA target power
+
+Example:
+        sata@ffe08000 {
+		compatible = "snps,spear-ahci";
+		reg = <0xffe08000 0x1000>;
+		interrupts = <115>;
+
+        };

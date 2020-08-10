@@ -1,0 +1,326 @@
+# Automatically generated
+# /home/vitaly/s2e/env/source/guest-images/scripts/download_windows_updates.py makefile -f /home/vitaly/s2e/env/source/guest-images/Windows/Windows_7_SP1_Updates_x86.ul -o $(WINDOWS_APPS_DIR)/win7_updates/x86 -v WINDOWS_UPDATES
+
+$(WINDOWS_APPS_DIR)/win7_updates/x86:
+	mkdir -p $@
+# Internet Explorer 11 English for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/15_2013-11-06_IE11-Windows6.1-x86-en-us.exe: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/9/2/F/92FC119C-3BCD-476C-B425-038A39625558/IE11-Windows6.1-x86-en-us.exe
+
+# KB2446710 - Security update for .NET Framework 3.5.1 on Windows 7 SP1
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2011-12-04_Windows6.1-KB2446710-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/F/6/5/F654AEF8-FF63-4CDF-8470-9DB04D1ED91F/Windows6.1-KB2446710-x86.msu
+
+# KB2478662 - Security update for .NET Framework 3.5.1 on Windows 7 SP1
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2011-06-14_Windows6.1-KB2478662-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/secu/2011/05/windows6.1-kb2478662-x86_174452aeff7fc4f9705a9fb54e089e0a4af3cb75.msu
+
+# KB2533552 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/01_2011-05-10_Windows6.1-KB2533552-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/8/0/C/80CCB26A-2267-40A7-A898-1D2F7C233A6A/Windows6.1-KB2533552-x86.msu
+
+# KB2545698 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-09-11_Windows6.1-KB2545698-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/updt/2011/06/windows6.1-kb2545698-x86_e9b32b4a60c2fb2f074aa91038318173c0aadacf.msu
+
+# KB2547666 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-06-27_Windows6.1-KB2547666-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/E/4/2/E42B6429-7DAB-4AC3-B3E1-E132C9FB74D2/Windows6.1-KB2547666-x86.msu
+
+# KB2574819 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-09-10_RDP-Windows6.1-KB2574819-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/A/D/4/AD4875AF-38B3-42C7-9915-16C7505C15DE/Windows6.1-KB2574819-v2-x86.msu
+
+# KB2592687 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-09-10_RDP-Windows6.1-KB2592687-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/1/E/2/1E2A08C9-B87B-4808-94A6-30BC9D65775E/Windows6.1-KB2592687-x86.msu
+
+# KB2667402 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-10-09_Windows6.1-KB2667402-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/9/B/A/9BAE15E4-BBD6-4B93-AB91-5E834025F3F6/Windows6.1-KB2667402-v2-x86.msu
+
+# KB2670838 - Platform update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-02-26_Windows6.1-KB2670838-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/1/4/9/14936FE9-4D16-4019-A093-5E00182609EB/Windows6.1-KB2670838-x86.msu
+
+# KB2676562 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-08-12_Windows6.1-KB2676562-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/secu/2012/04/windows6.1-kb2676562-x86_16ce9be3400bc75c415b1a90518c150d1927b8df.msu
+
+# KB2685811 - Kernel-Mode Driver Framework version 1.11 update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-11-13_Windows6.1-KB2685811-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/updt/2012/11/windows6.1-kb2685811-x86_4db620a8b8e85bab4822626530d01fd923c28786.msu
+
+# KB2685813 - User-Mode Driver Framework version 1.11 update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-11-13_Windows6.1-KB2685813-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/updt/2012/11/windows6.1-kb2685813-x86_d2c51b6b97d4ffcb069bcaafbff3135e96fe18e5.msu
+
+# KB2698365 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-07-10_Windows6.1-KB2698365-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/6/2/F/62F6421C-6673-4BCC-84A2-99D5A9C615F0/Windows6.1-KB2698365-x86.msu
+
+# KB2716513 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2716513-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/secu/2012/07/windows6.1-kb2716513-x86_25905fae996724a3d2528204fdea493caa560b11.msu
+
+# KB2719033 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2719033-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/msdownload/update/software/secu/2012/07/windows6.1-kb2719033-x86_d7583551cba5213afe8f35bcf8e19901f118348e.msu
+
+# KB2729094 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-10-09_Windows6.1-KB2729094-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/B/6/B/B6BF1D9B-2568-406B-88E8-E4A218DEA90A/Windows6.1-KB2729094-v2-x86.msu
+
+# KB2732059 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-10-09_Windows6.1-KB2732059-v5-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/B/2/B/B2B29C73-FEF8-433A-BF89-67B84C5D1521/Windows6.1-KB2732059-v5-x86.msu
+
+# KB2750841 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2750841-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/B/0/0/B0021BB9-E146-4B05-9BB2-054B39786279/Windows6.1-KB2750841-x86.msu
+
+# KB2761217 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2761217-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/A/1/D/A1D7BC1D-DFCF-4BFA-A1E0-D5EEFB865987/Windows6.1-KB2761217-x86.msu
+
+# KB2773072 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-01-08_Windows6.1-KB2773072-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/1/7/1/1718BAD1-874E-48A0-93D2-89EABD15AE79/Windows6.1-KB2773072-x86.msu
+
+# KB2813347 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-04-09_RDP-Windows6.1-KB2813347-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/3/3/6/33643971-3DAB-4962-BCF4-FF142018E33C/Windows6.1-KB2813347-x86.msu
+
+# KB2830477 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2014-02-12_RDP-Windows6.1-KB2830477-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/2/B/2/2B280EDD-FDA9-4044-9FB4-A3BE7CBF9AB1/Windows6.1-KB2830477-x86.msu
+
+# KB2834140 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-09-20_Windows6.1-KB2834140-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/F/1/4/F1424AD7-F754-4B6E-B0DA-151C7CBAE859/Windows6.1-KB2834140-v2-x86.msu
+
+# KB2862330 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-01-14_Windows6.1-KB2862330-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/E/2/D/E2DAEF68-4A26-4BB1-BC8B-01771FE71946/Windows6.1-KB2862330-v2-x86.msu
+
+# KB2894844 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2014-09-10_Windows6.1-KB2894844-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/9/1/C/91C53D25-7A2E-411B-B3F5-33AE18ABFAA5/Windows6.1-KB2894844-x86.msu
+
+# KB2900986 - Cumulative Security Update for ActiveX Killbits for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2013-11-13_Windows6.1-KB2900986-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/E/D/2/ED26255D-7A4F-4C2D-A7DA-A8B130A7D2CA/Windows6.1-KB2900986-x86.msu
+
+# KB2912390 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-02-11_Windows6.1-KB2912390-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/A/2/E/A2E67704-D00D-4769-B448-537E3A71D909/Windows6.1-KB2912390-x86.msu
+
+# KB2919469 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2014-02-12_Windows6.1-KB2919469-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/C/8/F/C8FF9222-166B-4242-BDFA-DC83E7CDFC47/Windows6.1-KB2919469-x86.msu
+
+# KB2923545 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2014-02-24_Windows6.1-KB2923545-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/updt/2014/02/windows6.1-kb2923545-x86_fff0876feea186260e48879a68791bcdaacd74f7.msu
+
+# KB2970228 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2014-09-02_Windows6.1-KB2970228-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/updt/2014/08/windows6.1-kb2970228-x86_6b082dc03faaff8a22c6f0146e2779f61be5ec57.msu
+
+# KB2984972 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-10-14_Windows6.1-KB2984972-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/9/0/C/90C4DB76-4EB6-4B0D-956F-1711B106EBD2/Windows6.1-KB2984972-x86.msu
+
+# KB3004375 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-02-10_Windows6.1-KB3004375-v3-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/0/E/3/0E32F39B-1D5E-4B0E-804C-F736DAADDD93/Windows6.1-KB3004375-v3-x86.msu
+
+# KB3006137 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-02-24_Windows6.1-KB3006137-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/updt/2015/02/windows6.1-kb3006137-x86_4a93f03431d6f85334822910e585bc32d5f261d0.msu
+
+# KB3020369 - April 2015 servicing stack update for Windows 7 and Windows Server 2008 R2
+$(WINDOWS_APPS_DIR)/win7_updates/x86/01_2015-04-01_Windows6.1-KB3020369-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/C/0/8/C0823F43-BFE9-4147-9B0A-35769CBBE6B0/Windows6.1-KB3020369-x86.msu
+
+# KB3020388 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-01-12_Windows6.1-KB3020388-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2014/12/windows6.1-kb3020388-x86_837e0478bce5d45a7e483ae2ab65056c74a7940d.msu
+
+# KB3020393 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-01-13_Windows6.1-KB3020393-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2014/12/windows6.1-kb3020393-x86_35d02bdf66b857877a64e797eacfa13f301ac0ef.msu
+
+# KB3035126 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-03-10_Windows6.1-KB3035126-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2015/02/windows6.1-kb3035126-x86_65e46b3d10323cee458b2ed8906b4395a3407e55.msu
+
+# KB3046269 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-04-14_Windows6.1-KB3046269-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/B/1/0/B10F8659-77CE-4139-8C34-B046950641A4/Windows6.1-KB3046269-x86.msu
+
+# KB3059317 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-06-09_Windows6.1-KB3059317-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/05/windows6.1-kb3059317-x86_7dbad42dd71389bb65948b81220fc019d77c8b77.msu
+
+# KB3064209 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-06-16_Windows6.1-KB3064209-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/5/2/A/52ADDA28-86A2-4639-AEA7-FD58A9739BC8/Windows6.1-KB3064209-x86.msu
+
+# KB3075226 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/20_2015-08-10_Windows6.1-KB3075226-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/07/windows6.1-kb3075226-x86_4ac94a6fd2b0038520d9bdab3d98d3779f557f7f.msu
+
+# KB3078601 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-08-11_Windows6.1-KB3078601-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/08/windows6.1-kb3078601-x86_4f9dbab91f23d4f39f6594026a740c0ea8507a7b.msu
+
+# KB3102429 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-01-16_Windows6.1-KB3102429-v2-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/E/7/1/E71E7B5B-7631-4B5F-82D5-3DE53E3E9C64/Windows6.1-KB3102429-v2-x86.msu
+
+# KB3110329 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-01-12_Windows6.1-KB3110329-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/4/B/5/4B5B1DCB-3C30-45C3-971B-8F7EE13AFCF6/Windows6.1-KB3110329-x86.msu
+
+# KB3118401 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-02-12_Windows6.1-KB3118401-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/updt/2016/02/windows6.1-kb3118401-x86_db0267a39805ae9e98f037a5f6ada5b34fa7bdb2.msu
+
+# KB3123479 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-01-12_Windows6.1-KB3123479-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/12/windows6.1-kb3123479-x86_9c0c4a6279016ff83e0dadfc7976cd0c05fb97bd.msu
+
+# KB3125574 - Convenience rollup update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/01_2016-05-16_Windows6.1-KB3125574-v4-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/updt/2016/05/windows6.1-kb3125574-v4-x86_ba1ff5537312561795cc04db0b02fbb0a74b2cbd.msu
+
+# KB3138612 - March 2016 Windows Update Client for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-03-02_Windows6.1-KB3138612-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/E/4/7/E47FB37E-7443-4047-91F7-16DDDCF2955C/Windows6.1-KB3138612-x86.msu
+
+# KB3150220 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3150220-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/E/B/1/EB1A2799-1C07-45C3-8ED8-C536E94CBB28/Windows6.1-KB3150220-x86.msu
+
+# KB3156016 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156016-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/7/A/0/7A088E32-4059-44F6-8B96-B7B7AA8AB350/Windows6.1-KB3156016-x86.msu
+
+# KB3156017 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156017-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/9/5/0/9503920B-F32D-4E32-88DD-D746B8C41166/Windows6.1-KB3156017-x86.msu
+
+# KB3156019 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156019-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/3/D/8/3D88620F-8D7C-414B-9325-A6EFE0203D24/Windows6.1-KB3156019-x86.msu
+
+# KB3159398 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3159398-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/05/windows6.1-kb3159398-x86_c4fa9c67178bef5dbcbd72cde2fe94f5126337e5.msu
+
+# KB3161102 - Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-07-25_Windows6.1-KB3161102-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/4/4/D/44D99151-3E68-411F-A460-75B33FECBA06/Windows6.1-KB3161102-x86.msu
+
+# KB3161949 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3161949-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/05/windows6.1-kb3161949-x86_0055d0d1e103d374e042f31ebdd26931853b882b.msu
+
+# KB3161958 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3161958-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/05/windows6.1-kb3161958-x86_68c2ffd3c03fa0450040c1dc6bcf3cff38f76fe1.msu
+
+# KB3170455 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-07-12_Windows6.1-KB3170455-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/8/9/F/89FCC97B-75B8-43A0-9E52-F6B66AF582F6/Windows6.1-KB3170455-x86.msu
+
+# KB3172605 - July 2016 update rollup for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-09-13_Windows6.1-KB3172605-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/updt/2016/09/windows6.1-kb3172605-x86_ae03ccbd299e434ea2239f1ad86f164e5f4deeda.msu
+
+# KB3179573 - August 2016 update rollup for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-08-16_Windows6.1-KB3179573-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/F/A/E/FAE2EAF8-F537-4B49-98B4-606EAD2D4ADD/Windows6.1-KB3179573-x86.msu
+
+# KB3181988 - Security Update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-09-20_Windows6.1-KB3181988-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.microsoft.com/download/C/D/4/CD43C8F8-80B7-46FA-8158-9B8AD89D36F7/Windows6.1-KB3181988-x86.msu
+
+# Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/15_2016-09-12_IE11-Windows6.1-KB3185319-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/09/ie11-windows6.1-kb3185319-x86_cd4081249bd098b0244fef6e9dfb8ee5674f1fcd.msu
+
+# KB4014565 - April 2017 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2017-04-10_Windows6.1-kb4014565-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2017/03/windows6.1-kb4014565-x86_a8749d60fb61f5558fbb501d4ca68b978e3742c3.msu
+
+# KB4019990 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2017-09-12_Windows6.1-kb4019990-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/updt/2017/05/windows6.1-kb4019990-x86_1365fb557d5e5917cbf59b507eac066ad89ea3f7.msu
+
+# KB4049016 - November 2017 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-01-04_Windows6.1-kb4049016-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2017/09/windows6.1-kb4040980-x86_533cbfb7e2754d4a82e558f0c6d4b767881fff1e.msu
+
+# KB4095874 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2018-05-17_Windows6.1-kb4095874-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/05/windows6.1-kb4095874-x86_cf88b2315cd73b7801ef09b247e60f1493525b24.msu
+
+# Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/15_2018-06-12_IE11-Windows6.1-KB4230450-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2018/06/ie11-windows6.1-kb4230450-x86_1de8c38bd18224df85b002e3cb808cd9caa11ba2.msu
+
+# KB4474419 - SHA-2 code signing support update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/02_2019-09-09_Windows6.1-KB4474419-v3-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2019/09/windows6.1-kb4474419-v3-x86_0f687d50402790f340087c576886501b3223bec6.msu
+
+# KB4480063 - January 2019 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-01-04_Windows6.1-kb4480063-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/01/windows6.1-kb4480063-x86_c64e7ddb94146889b2414a276562c68b8d3038d3.msu
+
+# KB4481252 - Microsoft Silverlight
+$(WINDOWS_APPS_DIR)/win7_updates/x86/30_2019-01-16_Silverlight-x86.exe: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ https://download.microsoft.com/download/D/D/F/DDF23DF4-0186-495D-AA35-C93569204409/50918.00/Silverlight.exe
+
+# Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/15_2018-12-19_IE11-Windows6.1-KB4483187-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/12/ie11-windows6.1-kb4483187-x86_8b3486b7d1630461150ff63108a614b716ad36ee.msu
+
+# KB4490628 - March 2019 servicing stack update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/01_2019-03-11_Windows6.1-KB4490628-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2019/03/windows6.1-kb4490628-x86_3cdb3df55b9cd7ef7fcb24fc4e237ea287ad0992.msu
+
+# KB4503548 - Microsoft .NET Framework 4.8 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/30_2019-11-09_ndp48-x86-x64-allos-enu.exe: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/ftpk/2019/08/ndp48-x86-x64-enu_0885a72554ca76d2cd3ad76f98878f22b6a1d0b2.exe
+
+# KB4507004 - July 2019 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-07-08_Windows6.1-kb4507004-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/07/windows6.1-kb4507004-x86_625917bdc06b040d7c312e1b8d805a43ff31cf8b.msu
+
+# Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/15_2019-08-10_IE11-Windows6.1-KB4511872-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/08/ie11-windows6.1-kb4511872-x86_c3fb6c63c8c8b182559232b9bffcfb8d1d9c3830.msu
+
+# KB4532941 - January 2020 Security and Quality Rollup for .NET Framework 4.8 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/30_2020-01-09_NDP48-kb4532941-x86.exe: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/ndp48-kb4532941-x86_19370dea90744c58926b12d239c99134d068a13d.exe
+
+# KB4532945 - January 2020 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7
+$(WINDOWS_APPS_DIR)/win7_updates/x86/06_2020-01-09_Windows6.1-KB4532945-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/windows6.1-kb4532945-x86_0438d1eece17622a078b0d08dd6e812a67a09f37.msu
+
+# KB4534310 - January 2020 Security Monthly Quality Rollup for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/05_2020-01-14_Windows6.1-KB4534310-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/windows6.1-kb4534310-x86_887a5caab59437e8f23aa5a4608950455bb37537.msu
+
+# KB4536952 - January 2020 servicing stack update for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/01_2020-01-13_Windows6.1-KB4536952-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://download.windowsupdate.com/d/msdownload/update/software/secu/2020/01/windows6.1-kb4536952-x86_f3b49481187651f64f13a0369c86ad7caa83b190.msu
+
+# KB971033 - Update Windows Activation Technologies for Windows 7 SP1 x86
+$(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-04-27_Windows6.1-KB971033-x86.msu: | $(WINDOWS_APPS_DIR)/win7_updates/x86
+	$(WGET) $@ http://go.microsoft.com/fwlink/?LinkID=150841
+
+WINDOWS_UPDATES := $(WINDOWS_UPDATES) $(WINDOWS_APPS_DIR)/win7_updates/x86/15_2013-11-06_IE11-Windows6.1-x86-en-us.exe $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2011-12-04_Windows6.1-KB2446710-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2011-06-14_Windows6.1-KB2478662-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/01_2011-05-10_Windows6.1-KB2533552-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-09-11_Windows6.1-KB2545698-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-06-27_Windows6.1-KB2547666-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-09-10_RDP-Windows6.1-KB2574819-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-09-10_RDP-Windows6.1-KB2592687-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-10-09_Windows6.1-KB2667402-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-02-26_Windows6.1-KB2670838-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-08-12_Windows6.1-KB2676562-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-11-13_Windows6.1-KB2685811-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-11-13_Windows6.1-KB2685813-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2012-07-10_Windows6.1-KB2698365-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2716513-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2719033-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-10-09_Windows6.1-KB2729094-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-10-09_Windows6.1-KB2732059-v5-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2750841-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2012-11-13_Windows6.1-KB2761217-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-01-08_Windows6.1-KB2773072-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2013-04-09_RDP-Windows6.1-KB2813347-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2014-02-12_RDP-Windows6.1-KB2830477-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2013-09-20_Windows6.1-KB2834140-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-01-14_Windows6.1-KB2862330-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2014-09-10_Windows6.1-KB2894844-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2013-11-13_Windows6.1-KB2900986-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-02-11_Windows6.1-KB2912390-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2014-02-12_Windows6.1-KB2919469-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2014-02-24_Windows6.1-KB2923545-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2014-09-02_Windows6.1-KB2970228-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2014-10-14_Windows6.1-KB2984972-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-02-10_Windows6.1-KB3004375-v3-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-02-24_Windows6.1-KB3006137-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/01_2015-04-01_Windows6.1-KB3020369-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-01-12_Windows6.1-KB3020388-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-01-13_Windows6.1-KB3020393-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-03-10_Windows6.1-KB3035126-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-04-14_Windows6.1-KB3046269-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-06-09_Windows6.1-KB3059317-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2015-06-16_Windows6.1-KB3064209-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/20_2015-08-10_Windows6.1-KB3075226-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2015-08-11_Windows6.1-KB3078601-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-01-16_Windows6.1-KB3102429-v2-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-01-12_Windows6.1-KB3110329-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-02-12_Windows6.1-KB3118401-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-01-12_Windows6.1-KB3123479-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/01_2016-05-16_Windows6.1-KB3125574-v4-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-03-02_Windows6.1-KB3138612-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3150220-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156016-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156017-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-05-10_Windows6.1-KB3156019-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3159398-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-07-25_Windows6.1-KB3161102-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3161949-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-06-14_Windows6.1-KB3161958-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-07-12_Windows6.1-KB3170455-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-09-13_Windows6.1-KB3172605-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2016-08-16_Windows6.1-KB3179573-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2016-09-20_Windows6.1-KB3181988-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/15_2016-09-12_IE11-Windows6.1-KB3185319-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2017-04-10_Windows6.1-kb4014565-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2017-09-12_Windows6.1-kb4019990-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-01-04_Windows6.1-kb4049016-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2018-05-17_Windows6.1-kb4095874-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/15_2018-06-12_IE11-Windows6.1-KB4230450-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/02_2019-09-09_Windows6.1-KB4474419-v3-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-01-04_Windows6.1-kb4480063-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/30_2019-01-16_Silverlight-x86.exe $(WINDOWS_APPS_DIR)/win7_updates/x86/15_2018-12-19_IE11-Windows6.1-KB4483187-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/01_2019-03-11_Windows6.1-KB4490628-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/30_2019-11-09_ndp48-x86-x64-allos-enu.exe $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2019-07-08_Windows6.1-kb4507004-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/15_2019-08-10_IE11-Windows6.1-KB4511872-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/30_2020-01-09_NDP48-kb4532941-x86.exe $(WINDOWS_APPS_DIR)/win7_updates/x86/06_2020-01-09_Windows6.1-KB4532945-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/05_2020-01-14_Windows6.1-KB4534310-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/01_2020-01-13_Windows6.1-KB4536952-x86.msu $(WINDOWS_APPS_DIR)/win7_updates/x86/10_2011-04-27_Windows6.1-KB971033-x86.msu

@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updatelist
+        product="Windows 7"
+        servicepack="Service Pack 1"
+        platform="x64"
+        language="ENU"
+        lastupdate="2020-01-16"
+>
+
+    <!-- Windows 7 SP1 Update List x64 - by www.raymond.cc -->
+
+    <categories>
+        <category id="1">Convenience Rollup Update and Prerequisites Part 1</category>
+        <category id="2">Convenience Rollup Update and Prerequisites Part 2</category>
+        <category id="5">Security Updates</category>
+        <category id="6">Security Updates .net 3.5</category>
+        <category id="10">Optional Updates</category>
+        <category id="15">Internet Explorer 11</category>
+        <category id="20">Remote Desktop Protocol (RDP) Updates</category>
+        <category id="25">Windows 10 and Telemetry Updates</category>
+        <category id="30">Optional Software</category>
+    </categories>
+
+    <updates>
+
+        <!-- Convenience Rollup Update and Prerequisites -->
+        <update id="KB2533552" category="1" publishdate="2011-05-10" article="http://support.microsoft.com/kb/2533552">
+            <title>KB2533552 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2533552-x64.msu</filename>
+            <url>http://download.microsoft.com/download/B/6/F/B6F95B10-8B74-42F2-B57A-2C559D43BC28/Windows6.1-KB2533552-x64.msu</url>
+        </update>
+
+        <update id="KB3020369" category="1" publishdate="2015-04-01"
+                article="https://support.microsoft.com/en-us/help/3020369">
+            <title>KB3020369 - April 2015 servicing stack update for Windows 7 and Windows Server 2008 R2</title>
+            <description></description>
+            <filename>Windows6.1-KB3020369-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/5/D/0/5D0821EB-A92D-4CA2-9020-EC41D56B074F/Windows6.1-KB3020369-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3125574" category="1" publishdate="2016-05-16" article="http://support.microsoft.com/kb/3125574">
+            <title>KB3125574 - Convenience rollup update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3125574-v4-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/updt/2016/05/windows6.1-kb3125574-v4-x64_2dafb1d203c8964239af3048b5dd4b1264cd93b9.msu
+            </url>
+        </update>
+
+        <!--
+        <update id="KB3177467" category="1" publishdate="2018-10-08" article="http://support.microsoft.com/kb/3177467">
+           <title>KB3177467 - October 2018 servicing stack update for Windows 7 SP1 x64</title>
+           <description></description>
+           <filename>Windows6.1-KB3177467-x64.msu</filename>
+           <url>http://download.windowsupdate.com/d/msdownload/update/software/crup/2018/09/windows6.1-kb3177467-v2-x64_b9df2405e7e034e3ffda160fff99a36ab96ba187.msu</url>
+        </update>
+        -->
+
+        <update id="KB4490628" category="1" publishdate="2019-03-11"
+                article="https://support.microsoft.com/en-us/help/4490628">
+            <title>KB4490628 - March 2019 servicing stack update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB4490628-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2019/03/windows6.1-kb4490628-x64_d3de52d6987f7c8bdc2c015dca69eac96047c76e.msu
+            </url>
+        </update>
+
+        <update id="KB4536952" category="1" publishdate="2020-01-13"
+                article="https://support.microsoft.com/en-us/help/4536952">
+            <title>KB4536952 - January 2020 servicing stack update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB4536952-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/windows6.1-kb4536952-x64_87f81056110003107fa0e0ec35a3b600ef300a14.msu
+            </url>
+        </update>
+
+        <update id="KB4474419" category="2" publishdate="2019-09-09"
+                article="https://support.microsoft.com/en-us/help/4474419">
+            <title>KB4474419 - SHA-2 code signing support update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB4474419-v3-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2019/09/windows6.1-kb4474419-v3-x64_b5614c6cea5cb4e198717789633dca16308ef79c.msu
+            </url>
+        </update>
+
+        <!-- Security Monthly Quality Rollup -->
+
+        <update id="KB4534310" category="5" publishdate="2020-01-14" article="http://support.microsoft.com/kb/4534310">
+            <title>KB4534310 - January 2020 Security Monthly Quality Rollup for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB4534310-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/windows6.1-kb4534310-x64_4dc78a6eeb14e2eac1ede7381f4a93658c8e2cdc.msu
+            </url>
+        </update>
+
+        <!-- Kernel-User Mode Driver Framework v1.11 -->
+
+        <update id="KB2685811" category="5" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2685811">
+            <title>KB2685811 - Kernel-Mode Driver Framework version 1.11 update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2685811-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/msdownload/update/software/updt/2012/11/windows6.1-kb2685811-x64_191e09df632b70fd4f4b27d4cb9227f7c5a1c98c.msu
+            </url>
+        </update>
+
+        <update id="KB2685813" category="5" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2685813">
+            <title>KB2685813 - User-Mode Driver Framework version 1.11 update for Windows 7 SP1 x64</title>
+            <description>.</description>
+            <filename>Windows6.1-KB2685813-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/msdownload/update/software/updt/2012/11/windows6.1-kb2685813-x64_22a969bada171678b0936bb320e6a7778e8adc07.msu
+            </url>
+        </update>
+
+        <!-- Security Updates -->
+
+        <update id="KB2698365" category="5" publishdate="2012-07-10" article="http://support.microsoft.com/kb/2698365">
+            <title>KB2698365 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2698365-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/7/8/C/78CA3552-614E-4815-A64F-8701C568D72D/Windows6.1-KB2698365-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2667402" category="5" publishdate="2012-10-09" article="http://support.microsoft.com/kb/2667402">
+            <title>KB2667402 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2667402-v2-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/2/2/1/221537C9-915E-45F7-86D5-F74F2723F45B/Windows6.1-KB2667402-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2676562" category="5" publishdate="2014-09-02" article="http://support.microsoft.com/kb/2676562">
+            <title>KB2676562 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2676562-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/msdownload/update/software/secu/2012/04/windows6.1-kb2676562-x64_446b9165a9a52540896cefb69f6de1d193416056.msu
+            </url>
+        </update>
+
+        <update id="KB2719033" category="10" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2719033">
+            <title>KB2719033 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2719033-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/msdownload/update/software/secu/2012/07/windows6.1-kb2719033-x64_50a47585de07a6edbef683dbfbf382f2c41d81d5.msu
+            </url>
+        </update>
+
+        <update id="KB2716513" category="10" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2716513">
+            <title>KB2716513 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2716513-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/msdownload/update/software/secu/2012/07/windows6.1-kb2716513-x64_df5a850c2b8e9c09a176f6c78527a2991f6c63f4.msu
+            </url>
+        </update>
+
+        <update id="KB2900986" category="5" publishdate="2013-11-13" article="http://support.microsoft.com/kb/2900986">
+            <title>KB2900986 - Cumulative Security Update for ActiveX Killbits for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2900986-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/5/D/9/5D93E83F-F5B8-42D6-87F5-73F3B10D8D87/Windows6.1-KB2900986-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2862330-v2" category="5" publishdate="2014-01-14"
+                article="http://support.microsoft.com/kb/2862330">
+            <title>KB2862330 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2862330-v2-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/9/8/1/9813DB15-46A9-4B6C-BFE4-1D25EEE5ECF3/Windows6.1-KB2862330-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2984972" category="5" publishdate="2014-10-14" article="http://support.microsoft.com/kb/2984972">
+            <title>KB2984972 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2984972-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/D/D/3/DD38C2FF-16AC-4B8C-8068-97237CF53B01/Windows6.1-KB2984972-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2912390" category="5" publishdate="2014-02-11" article="http://support.microsoft.com/kb/2912390">
+            <title>KB2912390 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2912390-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/A/E/D/AEDDD34E-EB10-4D54-9B68-250667EF7A8B/Windows6.1-KB2912390-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3004375" category="5" publishdate="2015-02-10" article="http://support.microsoft.com/kb/3004375">
+            <title>KB3004375 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3004375-v3-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/F/4/B/F4BE818D-22B9-4EF5-8E20-B9C4A605E61E/Windows6.1-KB3004375-v3-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3046269" category="5" publishdate="2015-04-14" article="http://support.microsoft.com/kb/3046269">
+            <title>KB3046269 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3046269-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/8/6/6/866F143B-55ED-4308-81EA-20EE4167A639/Windows6.1-KB3046269-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3059317" category="5" publishdate="2015-06-09" article="http://support.microsoft.com/kb/3059317">
+            <title>KB3059317 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3059317-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/05/windows6.1-kb3059317-x64_b68db33239bddcb59e881252cfc7b79d58a2f26b.msu
+            </url>
+        </update>
+
+        <update id="KB3035126" category="5" publishdate="2015-03-10" article="http://support.microsoft.com/kb/3035126">
+            <title>KB3035126 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3035126-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/02/windows6.1-kb3035126-x64_ba6bf5118bc60be7f824c4dba9131185e4755646.msu
+            </url>
+        </update>
+
+        <update id="KB3078601" category="5" publishdate="2015-08-11" article="http://support.microsoft.com/kb/3078601">
+            <title>KB3078601 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3078601-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/08/windows6.1-kb3078601-x64_df86415b7464c74c360cc7d2f2d9a3e49509bcf1.msu
+            </url>
+        </update>
+
+        <update id="KB3110329" category="5" publishdate="2016-01-12" article="http://support.microsoft.com/kb/3110329">
+            <title>KB3110329 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3110329-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/6/4/F/64F42EC7-F88B-41B7-99F6-BC83ECE4105E/Windows6.1-KB3110329-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3123479" category="5" publishdate="2016-01-12" article="http://support.microsoft.com/kb/3123479">
+            <title>KB3123479 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3123479-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/12/windows6.1-kb3123479-x64_f8d8752d60da493c119b5b03c6b54ffc5dbff69d.msu
+            </url>
+        </update>
+
+        <update id="KB3150220" category="5" publishdate="2016-05-10" article="http://support.microsoft.com/kb/3150220">
+            <title>KB3150220 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3150220-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/1/E/2/1E2E5D59-6A94-4CBA-9A33-167BF3CD361C/Windows6.1-KB3150220-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3156016" category="5" publishdate="2016-05-10" article="http://support.microsoft.com/kb/3156016">
+            <title>KB3156016 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3156016-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/2/3/2/232223A7-6A93-4B03-BBB1-1D8988B615C8/Windows6.1-KB3156016-x64.msu
+            </url>
+        </update>
+
+        <!--
+        <update id="KB3156017" category="5" publishdate="2016-05-10" article="http://support.microsoft.com/kb/3156017">
+            <title>KB3156017 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3156017-x64.msu</filename>
+            <url>https://download.microsoft.com/download/C/2/A/C2A4D375-B9F9-47F3-A1F3-A85FF88991DD/Windows6.1-KB3156017-x64.msu</url>
+        </update>
+         -->
+        <update id="KB3156019" category="5" publishdate="2016-05-10" article="http://support.microsoft.com/kb/3156019">
+            <title>KB3156019 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3156019-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/E/4/6/E46D3C51-0D66-4A15-BB64-F3B36DF32BA1/Windows6.1-KB3156019-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3159398" category="5" publishdate="2016-06-14" article="http://support.microsoft.com/kb/3159398">
+            <title>KB3159398 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3159398-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/05/windows6.1-kb3159398-x64_dc2b2c11af4b38b0b632bd7f6d683d57a93b711c.msu
+            </url>
+        </update>
+
+        <update id="KB3161949" category="5" publishdate="2016-06-14" article="http://support.microsoft.com/kb/3161949">
+            <title>KB3161949 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3161949-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/05/windows6.1-kb3161949-x64_e2372fb5746e9474cec6ef1710f8d58ec5c6c000.msu
+            </url>
+        </update>
+
+        <update id="KB3161958" category="5" publishdate="2016-06-14" article="http://support.microsoft.com/kb/3161958">
+            <title>KB3161958 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3161958-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2016/05/windows6.1-kb3161958-x64_eb3a21d1d8175679bb60ed8a1df47320f9df0c59.msu
+            </url>
+        </update>
+
+        <update id="KB3170455" category="5" publishdate="2016-07-12" article="http://support.microsoft.com/kb/3170455">
+            <title>KB3170455 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3170455-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/E/8/1/E81125CD-70D8-4124-9777-54846FF37C0B/Windows6.1-KB3170455-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3181988" category="5" publishdate="2016-09-20" article="http://support.microsoft.com/kb/3181988">
+            <title>KB3181988 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3181988-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/2/C/9/2C9F790D-553F-4FB7-AF4D-FFBC7EEA3CE5/Windows6.1-KB3181988-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3020388" category="5" publishdate="2015-01-12" article="http://support.microsoft.com/kb/3020388">
+            <title>KB3020388 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3020388-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2014/12/windows6.1-kb3020388-x64_1627cf039f34cdbc63078c61e9fa7f1a78b284c0.msu
+            </url>
+        </update>
+
+        <!-- RDP -->
+
+        <update id="KB2813347" category="20" publishdate="2013-04-09" article="http://support.microsoft.com/kb/2813347">
+            <title>KB2813347 - Security Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2813347-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/6/2/7/62707A22-00F8-4742-9E10-C8E61DB92AD9/Windows6.1-KB2813347-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2592687" category="20" publishdate="2013-09-10" article="http://support.microsoft.com/kb/2592687">
+            <title>KB2592687 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2592687-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/A/F/5/AF5C565C-9771-4BFB-973B-4094C1F58646/Windows6.1-KB2592687-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2574819" category="20" publishdate="2013-09-10" article="http://support.microsoft.com/kb/2574819">
+            <title>KB2574819 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2574819-v2-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/D/0/7/D07A8332-3B08-4919-9683-BFDD4D6F7BDC/Windows6.1-KB2574819-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2830477" category="20" publishdate="2014-02-12" article="http://support.microsoft.com/kb/2830477">
+            <title>KB2830477 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2830477-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/D/0/7/D07A8332-3B08-4919-9683-BFDD4D6F7BDC/Windows6.1-KB2830477-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3075226" category="20" publishdate="2015-08-10" article="http://support.microsoft.com/kb/3075226">
+            <title>KB3075226 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3075226-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2015/07/windows6.1-kb3075226-x64_edcaa1b72946b2894f0a3debf08adb059d5a254b.msu
+            </url>
+        </update>
+
+        <update id="KB2923545" category="20" publishdate="2014-02-24" article="http://support.microsoft.com/kb/2923545">
+            <title>KB2923545 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2923545-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/updt/2014/02/windows6.1-kb2923545-x64_d263a19b8935efa334ef713cfbfecede3c51a3d1.msu
+            </url>
+        </update>
+
+        <!-- Optional Updates -->
+
+        <update id="KB3020393" category="10" publishdate="2015-01-13" article="http://support.microsoft.com/kb/3020393">
+            <title>KB3020393 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3020393-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2014/12/windows6.1-kb3020393-x64_2d98b41288b8791dd2656fcef96b0b6055aa2aa0.msu
+            </url>
+        </update>
+
+
+        <update id="KB2547666" category="10" publishdate="2011-06-27" article="http://support.microsoft.com/kb/2547666">
+            <title>KB2547666 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2547666-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/E/E/4/EE4DA494-C870-409B-8938-05305BF52BA8/Windows6.1-KB2547666-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2545698" category="10" publishdate="2011-09-11" article="http://support.microsoft.com/kb/2545698">
+            <title>KB2545698 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2545698-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/0/5/6/05675ADF-21AB-4476-8731-95182643D02C/Windows6.1-KB2545698-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2603229" category="10" publishdate="2011-10-26" article="http://support.microsoft.com/kb/2603229">
+            <title>KB2603229 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2603229-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/9/5/9/959A7CAA-CBC1-44F9-B81E-A74348599ABC/Windows6.1-KB2603229-x64.msu
+            </url>
+        </update>
+
+        <update id="KB971033" category="10" publishdate="2011-04-27" article="http://support.microsoft.com/kb/971033">
+            <title>KB971033 - Update Windows Activation Technologies for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB971033-x64.msu</filename>
+            <url>http://go.microsoft.com/fwlink/?LinkID=152411</url>
+        </update>
+
+        <update id="KB2729094" category="10" publishdate="2012-10-09" article="http://support.microsoft.com/kb/2729094">
+            <title>KB2729094 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2729094-v2-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/6/C/A/6CA15546-A46C-4333-B405-AB18785ABB66/Windows6.1-KB2729094-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2732059" category="10" publishdate="2012-10-09" article="http://support.microsoft.com/kb/2732059">
+            <title>KB2732059 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2732059-v5-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/F/6/1/F616B4DD-57F5-4866-9BE7-FB9C410756E1/Windows6.1-KB2732059-v5-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2750841" category="10" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2750841">
+            <title>KB2750841 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2750841-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/A/4/B/A4B08AA8-01A6-4C85-A209-DBB86E1A9CE2/Windows6.1-KB2750841-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2761217" category="10" publishdate="2012-11-13" article="http://support.microsoft.com/kb/2761217">
+            <title>KB2761217 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2761217-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/D/5/F/D5F8011E-9096-4C46-A74D-5E0F3F564082/Windows6.1-KB2761217-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2773072" category="10" publishdate="2013-01-08" article="http://support.microsoft.com/kb/2773072">
+            <title>KB2773072 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2773072-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/9/D/E/9DE7F67E-E7E4-4206-BE95-256C99F4A9A6/Windows6.1-KB2773072-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2670838" category="10" publishdate="2013-02-26" article="http://support.microsoft.com/kb/2670838">
+            <title>KB2670838 - Platform update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2670838-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/1/4/9/14936FE9-4D16-4019-A093-5E00182609EB/Windows6.1-KB2670838-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2834140" category="10" publishdate="2013-09-20" article="http://support.microsoft.com/kb/2834140">
+            <title>KB2834140 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2834140-v2-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/5/A/5/5A548BFE-ADC5-414B-B6BD-E1EC27A8DD80/Windows6.1-KB2834140-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2919469" category="10" publishdate="2014-02-12" article="http://support.microsoft.com/kb/2919469">
+            <title>KB2919469 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2919469-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/2/D/7/2D7B1021-976C-42AB-B098-0BBA02823C82/Windows6.1-KB2919469-x64.msu
+            </url>
+        </update>
+
+
+        <update id="KB2970228" category="10" publishdate="2014-09-02" article="http://support.microsoft.com/kb/2970228">
+            <title>KB2970228 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2970228-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/updt/2014/08/windows6.1-kb2970228-x64_929e88aa259841f7936be32c82da56bf2ba22f73.msu
+            </url>
+        </update>
+
+        <update id="KB3006137" category="10" publishdate="2015-02-24" article="http://support.microsoft.com/kb/3006137">
+            <title>KB3006137 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3006137-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/updt/2015/02/windows6.1-kb3006137-x64_3e0f0b8edfd6cda0c37fba3575724c6e829cdda3.msu
+            </url>
+        </update>
+
+        <update id="KB3064209" category="10" publishdate="2015-06-16" article="http://support.microsoft.com/kb/3064209">
+            <title>KB3064209 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3064209-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/3/7/A/37A7BC0A-9E57-4B7D-B143-39CFFA4F2A2D/Windows6.1-KB3064209-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3102429" category="10" publishdate="2016-01-16" article="http://support.microsoft.com/kb/3102429">
+            <title>KB3102429 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3102429-v2-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/9/B/1/9B14DB44-D42B-4ABC-88A5-4B45C7FE3E21/Windows6.1-KB3102429-v2-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3118401" category="10" publishdate="2016-02-12" article="http://support.microsoft.com/kb/3118401">
+            <title>KB3118401 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3118401-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/D/1/0/D107EB4D-2295-4127-A187-97FB290D7A3F/Windows6.1-KB3118401-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3138612" category="10" publishdate="2016-03-02" article="http://support.microsoft.com/kb/3138612">
+            <title>KB3138612 - March 2016 Windows Update Client for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3138612-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/B/7/C/B7CD3A70-1EA7-486A-9585-F6814663F1A9/Windows6.1-KB3138612-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3161102" category="10" publishdate="2016-07-25" article="http://support.microsoft.com/kb/3161102">
+            <title>KB3161102 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3161102-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/F/C/8/FC8CF7F3-9E87-45DB-9378-EB58917465D5/Windows6.1-KB3161102-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3179573" category="10" publishdate="2016-08-16" article="http://support.microsoft.com/kb/3179573">
+            <title>KB3179573 - August 2016 update rollup for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3179573-x64.msu</filename>
+            <url>
+                https://download.microsoft.com/download/2/C/6/2C6561A0-BB92-4BB0-8D13-12DEDD5EBA6F/Windows6.1-KB3179573-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3172605" category="10" publishdate="2016-09-13" article="http://support.microsoft.com/kb/3172605">
+            <title>KB3172605 - July 2016 update rollup for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3172605-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/updt/2016/09/windows6.1-kb3172605-x64_2bb9bc55f347eee34b1454b50c436eb6fd9301fc.msu
+            </url>
+        </update>
+
+        <!-- Windows 10 Upgrade and Telemetry updates -->
+
+        <update id="KB3021917" category="25" publishdate="2015-02-10" article="http://support.microsoft.com/kb/3021917">
+            <title>KB3021917 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3021917-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/2/3/0/230B52C5-A0AD-493D-892E-DD8C5D31D358/Windows6.1-KB3021917-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3068708" category="25" publishdate="2015-06-02" article="http://support.microsoft.com/kb/3068708">
+            <title>KB3068708 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3068708-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/7/8/A/78A524A5-AC05-4DD3-AA67-174609EFF2D9/Windows6.1-KB3068708-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3080149" category="25" publishdate="2015-08-18" article="http://support.microsoft.com/kb/3080149">
+            <title>KB3080149 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3080149-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/4/E/8/4E864B31-7756-4639-8716-0379F6435016/Windows6.1-KB3080149-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2952664" category="25" publishdate="2018-07-18" article="http://support.microsoft.com/kb/2952664">
+            <title>KB2952664 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB2952664-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/crup/2018/07/windows6.1-kb2952664-v25-x64_9c592f060c857166bb548b021223ed4b4cfe4d37.msu
+            </url>
+        </update>
+
+        <update id="KB3184143" category="25" publishdate="2016-09-20" article="http://support.microsoft.com/kb/3184143">
+            <title>KB3184143 - Update for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>Windows6.1-KB3184143-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/A/9/C/A9C8EEA1-A4C0-4339-A3B8-2924C16EF89D/Windows6.1-KB3184143-x64.msu
+            </url>
+        </update>
+
+        <update id="KB3150513" category="25" publishdate="2016-05-11" article="http://support.microsoft.com/kb/3150513">
+            <title>KB3150513 - Compatibility Definition Update for Windows 7 SP1 x64 (requires KB2952664)</title>
+            <description></description>
+            <filename>Windows6.1-kb3150513-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/updt/2016/05/windows6.1-kb3150513-x64_6cbb71abc859a82acd6842b5765ab43f981c08e5.msu
+            </url>
+        </update>
+
+        <!-- IE11 -->
+
+        <update id="IE11 (KB2841134)" category="15" publishdate="2013-11-06"
+                article="http://support.microsoft.com/kb/2841134">
+            <title>Internet Explorer 11 English for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>IE11-Windows6.1-x64-en-us.exe</filename>
+            <url>
+                http://download.microsoft.com/download/7/1/7/7179A150-F2D2-4502-9D70-4B59EA148EAA/IE11-Windows6.1-x64-en-us.exe
+            </url>
+        </update>
+
+        <update id="KB3185319" category="15" publishdate="2016-09-12" article="http://support.microsoft.com/kb/3185319">
+            <title>Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>IE11-Windows6.1-KB3185319-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2016/09/ie11-windows6.1-kb3185319-x64_fc0fd52e6ce28c212c2ce5b3dd13cf5fbcb95ca5.msu
+            </url>
+        </update>
+
+        <update id="KB4483187" category="15" publishdate="2018-12-19" article="http://support.microsoft.com/kb/4483187">
+            <title>Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>IE11-Windows6.1-KB4483187-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/12/ie11-windows6.1-kb4483187-x64_f57683541da12b2646ee182a8a84b7a03b9ed076.msu
+            </url>
+        </update>
+
+        <update id="KB4230450" category="15" publishdate="2018-06-12" article="http://support.microsoft.com/kb/4230450">
+            <title>Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>IE11-Windows6.1-KB4230450-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2018/06/ie11-windows6.1-kb4230450-x64_15e3db473d1629895526a03c721649289e0b5799.msu
+            </url>
+        </update>
+
+        <update id="KB4511872" category="15" publishdate="2019-08-10" article="http://support.microsoft.com/kb/4511872">
+            <title>Cumulative Security Update Internet Explorer 11 English for Windows 7 SP1 x64</title>
+            <description></description>
+            <filename>IE11-Windows6.1-KB4511872-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/08/ie11-windows6.1-kb4511872-x64_3f58d73f51b00b2007702526c0d9a7835dc9baf4.msu
+            </url>
+        </update>
+
+        <!-- .NET Framework 3.5 Updates -->
+
+        <update id="KB2894844" category="6" publishdate="2014-09-10" article="http://support.microsoft.com/kb/2894844">
+            <title>KB2894844 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1</title>
+            <description></description>
+            <filename>Windows6.1-KB2894844-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/9/1/C/91C53D25-7A2E-411B-B3F5-33AE18ABFAA5/Windows6.1-KB2894844-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2446710" category="6" publishdate="2011-12-04" article="http://support.microsoft.com/kb/2446710">
+            <title>KB2446710 - Security update for .NET Framework 3.5.1 on Windows 7 SP1</title>
+            <description></description>
+            <filename>Windows6.1-KB2446710-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/F/6/5/F654AEF8-FF63-4CDF-8470-9DB04D1ED91F/Windows6.1-KB2446710-x64.msu
+            </url>
+        </update>
+
+        <update id="KB2478662" category="6" publishdate="2011-06-14" article="http://support.microsoft.com/kb/2478662">
+            <title>KB2478662 - Security update for .NET Framework 3.5.1 on Windows 7 SP1</title>
+            <description></description>
+            <filename>Windows6.1-KB2478662-x64.msu</filename>
+            <url>
+                http://download.microsoft.com/download/0/5/F/05FB67FB-C1EC-4B86-89C1-F4ED9CAE85FA/Windows6.1-KB2478662-x64.msu
+            </url>
+        </update>
+
+        <update id="KB4480063" category="6" publishdate="2019-01-04" article="http://support.microsoft.com/kb/4480063">
+            <title>KB4480063 - January 2019 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7</title>
+            <description></description>
+            <filename>Windows6.1-kb4480063-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/01/windows6.1-kb4480063-x64_fa96098bc81237fb45ad887706094c2e0c7a73eb.msu
+            </url>
+        </update>
+
+        <update id="KB4507004" category="6" publishdate="2019-07-08" article="http://support.microsoft.com/kb/4507004">
+            <title>KB4507004 - July 2019 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7</title>
+            <description></description>
+            <filename>Windows6.1-kb4507004-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2019/07/windows6.1-kb4507004-x64_a7d988d65422c8cfbbed141c95aeea37a8743167.msu
+            </url>
+        </update>
+
+        <update id="KB4049016" category="6" publishdate="2019-01-04" article="http://support.microsoft.com/kb/4049016">
+            <title>KB4049016 - November 2017 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7</title>
+            <description></description>
+            <filename>Windows6.1-kb4049016-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2017/09/windows6.1-kb4040980-x64_83282fb5210091802984ead0d4175879056d602c.msu
+            </url>
+        </update>
+
+        <update id="KB4019990" category="6" publishdate="2017-09-12" article="http://support.microsoft.com/kb/4019990">
+            <title>KB4019990 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1</title>
+            <description></description>
+            <filename>Windows6.1-kb4019990-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/updt/2017/05/windows6.1-kb4019990-x64_35cc310e81ef23439ba0ec1f11d7b71dd34adfe5.msu
+            </url>
+        </update>
+
+        <update id="KB4095874" category="6" publishdate="2018-05-17" article="http://support.microsoft.com/kb/4095874">
+            <title>KB4095874 - Update for Microsoft .NET Framework 3.5.1 for Windows 7 SP1</title>
+            <description></description>
+            <filename>Windows6.1-kb4095874-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/d/msdownload/update/software/secu/2018/05/windows6.1-kb4095874-x64_13904512d1614ba1a336061e90f7078becf3be5a.msu
+            </url>
+        </update>
+
+        <update id="KB4532945" category="6" publishdate="2020-01-09" article="http://support.microsoft.com/kb/4532945">
+            <title>KB4532945 - January 2020 Security and Quality Rollup for .NET Framework 3.5.1 for Windows 7</title>
+            <description></description>
+            <filename>Windows6.1-KB4532945-x64.msu</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/windows6.1-kb4532945-x64_d070fb06c4c56f70e4d2e891181028fa7c35694d.msu
+            </url>
+        </update>
+
+
+        <!-- Optional Software -->
+
+        <!--
+        <update id="KB890830" category="30" publishdate="2020-01-14" article="http://support.microsoft.com/kb/890830">
+            <title>KB890830 - Malicious Software Removal Tool (January 2020)</title>
+            <description></description>
+            <filename>Windows-KB890830-x64-V5.79.exe</filename>
+            <url>
+                https://download.microsoft.com/download/2/C/5/2C563B99-54D9-4D85-A82B-45D3CD2F53CE/Windows-KB890830-x64-V5.79.exe
+            </url>
+        </update>
+        -->
+
+        <update id="KB4503548" category="30" publishdate="2019-11-09" article="http://support.microsoft.com/kb/4503548">
+            <title>KB4503548 - Microsoft .NET Framework 4.8 for Windows 7</title>
+            <description></description>
+            <filename>ndp48-x86-x64-allos-enu.exe</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/ftpk/2019/08/ndp48-x86-x64-enu_0885a72554ca76d2cd3ad76f98878f22b6a1d0b2.exe
+            </url>
+        </update>
+
+        <update id="KB4532941" category="30" publishdate="2020-01-09" article="http://support.microsoft.com/kb/4532941">
+            <title>KB4532941 - January 2020 Security and Quality Rollup for .NET Framework 4.8 for Windows 7</title>
+            <description></description>
+            <filename>NDP48-kb4532941-x64.exe</filename>
+            <url>
+                http://download.windowsupdate.com/c/msdownload/update/software/secu/2020/01/ndp48-kb4532941-x64_3220ceb5d24711680ceb3dfef6d7847305185ea2.exe
+            </url>
+        </update>
+
+        <update id="KB4481252" category="30" publishdate="2019-01-16" article="http://support.microsoft.com/kb/4481252">
+            <title>KB4481252 - Microsoft Silverlight</title>
+            <description></description>
+            <filename>Silverlight-x64.exe</filename>
+            <url>
+                https://download.microsoft.com/download/D/D/F/DDF23DF4-0186-495D-AA35-C93569204409/50918.00/Silverlight_x64.exe
+            </url>
+        </update>
+
+        <!--
+        <update id="KB958559" category="30" publishdate="2011-02-14" article="http://support.microsoft.com/kb/958559">
+            <title>KB958559 - Windows Virtual PC</title>
+            <description></description>
+            <filename>Windows6.1-KB958559-x64-RefreshPkg.msu</filename>
+            <url>
+                http://download.microsoft.com/download/0/5/5/0554AE99-785F-45CB-B1F2-0E3ED1E6117D/Windows6.1-KB958559-x64-RefreshPkg.msu
+            </url>
+        </update>
+        -->
+
+        <!--
+        <update id="KB3191566" category="30" publishdate="2017-01-19" article="https://msdn.microsoft.com/en-us/powershell/wmf/5.1/release-notes">
+            <title>KB3191566 - Windows Management Framework (WMF) 5.1 (Requires .NET 4.6.2+)</title>
+            <description>Extract the zip and add to the update list. Must be installed after .NET</description>
+            <filename>Win7AndW2K8R2-KB3191566-WMF51-x64.zip</filename>
+            <url>http://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip</url>
+        </update>
+        -->
+    </updates>
+
+</updatelist>

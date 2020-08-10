@@ -1,0 +1,10 @@
+*.json
+tmp
+*.sh
+*.c
+poc
+*.cfg
+*.cap
+database
+corpus.db
+syscalls.dict

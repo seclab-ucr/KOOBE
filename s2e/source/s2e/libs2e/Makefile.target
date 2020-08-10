@@ -1,0 +1,70 @@
+# Copyright (C) 2017, Cyberhaven
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+include config.mak
+
+ifeq ($(CONFIG_SYMBEX), 1)
+ifeq ($(CONFIG_SYMBEX_MP), 1)
+  BC_TARGETS := op_helper.bc.$(TARGET_ARCH)
+else
+  BC_TARGETS := op_helper_sp.bc.$(TARGET_ARCH)
+endif
+endif
+
+
+TARGETS := libs2e.so $(BC_TARGETS)
+
+.PHONY: libs2e/src/libs2e.so libtcg/src/libtcg.a libcpu/src/libcpu.a libs2ecore/src/libs2ecore.a libs2eplugins/src/libs2eplugins.a
+
+all: $(TARGETS)
+
+libtcg/src/libtcg.a:
+	$(MAKE) -C libtcg
+
+libcpu/src/libcpu.a:
+	$(MAKE) -C libcpu
+
+libcpu/src/op_helper.bc: libcpu/src/libcpu.a
+	@echo $@
+
+libs2ecore/src/libs2ecore.a: libcpu/src/libcpu.a libtcg/src/libtcg.a
+	$(MAKE) -C libs2ecore
+
+libs2eplugins/src/libs2eplugins.a: libs2ecore/src/libs2ecore.a
+	$(MAKE) -C libs2eplugins
+
+
+ifeq ($(CONFIG_SYMBEX), 1)
+libs2e/src/libs2e.so: libcpu/src/libcpu.a libtcg/src/libtcg.a libs2eplugins/src/libs2eplugins.a
+	$(MAKE) -C libs2e
+else
+libs2e/src/libs2e.so: libcpu/src/libcpu.a libtcg/src/libtcg.a
+	$(MAKE) -C libs2e
+endif
+
+op_helper_sp.bc.$(TARGET_ARCH) op_helper.bc.$(TARGET_ARCH): libcpu/src/op_helper.bc
+	cp -v $^ $@
+
+libs2e.so: libs2e/src/libs2e.so
+	cp -v $^ $@
+
+clean:
+	rm -f *.a *.so *.o *.bc*
+	for d in libtcg libcpu libs2ecore libs2eplugins libs2e; do cd "$$d" && make clean && cd ..; done

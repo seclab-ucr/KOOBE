@@ -1,0 +1,11 @@
+char buffer[16];
+uint8 content[20] = {0};
+uint64 address = (uint64)&content;
+*(uint16*)(address + 0) = 0x11;
+*(uint16*)(address + 2) = 0x300;
+*(uint32*)(address + 4) = 1;
+*(uint16*)(address + 8) = 1;
+*(uint8*)(address + 0xb) = 6;
+for (int i = 0; i < %d; i++) {
+	syscall(__NR_sendto, s[i], buffer, 16, 0, address, 0x14);
+}

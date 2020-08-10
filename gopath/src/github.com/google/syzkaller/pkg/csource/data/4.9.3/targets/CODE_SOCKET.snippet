@@ -1,0 +1,6 @@
+for (int i = 0; i < %d; i++) {
+    s[i] = syscall(__NR_socket, 0x11, 2, htobe16(0x0806));
+    if (s[i] == -1) {
+        fail("[-] socket(SOCK_DGRAM)");
+    }
+}

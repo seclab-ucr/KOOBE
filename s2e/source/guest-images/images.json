@@ -1,0 +1,171 @@
+{
+  "version": 3,
+  "images": {
+    "debian-9.2.1-i386": {
+      "name": "Debian i386 image",
+      "image_group": "linux",
+      "url": "https://drive.google.com/open?id=1RltZ99RXk4dnP8XHAldVyCgUcliDTplY",
+      "iso": {
+        "url": "https://cdimage.debian.org/mirror/cdimage/archive/9.2.1/i386/iso-cd/debian-9.2.1-i386-netinst.iso"
+      },
+      "os": {
+        "name": "debian",
+        "version": "9.2.1",
+        "arch": "i386",
+        "build": "",
+        "binary_formats": ["elf"]
+      },
+      "hw": {
+        "default_disk_size": "4G",
+        "default_snapshot_size": "256M",
+        "nic": "e1000"
+      }
+    },
+
+
+    "cgc_debian-9.2.1-i386": {
+      "name": "Debian i386 image with CGC kernel and user-space packages",
+      "image_group": "linux",
+      "url": "https://drive.google.com/open?id=1vexW3emZ5-jQ2hohelCfM3iAdFmcFqbq",
+      "iso": {
+        "url": "https://cdimage.debian.org/mirror/cdimage/archive/9.2.1/i386/iso-cd/debian-9.2.1-i386-netinst.iso"
+      },
+      "os": {
+        "name": "cgc_debian",
+        "version": "9.2.1",
+        "arch": "i386",
+        "build": "",
+        "binary_formats": ["decree"]
+      },
+      "hw": {
+        "default_disk_size": "4G",
+        "default_snapshot_size": "256M",
+        "nic": "e1000"
+      }
+    },
+
+
+    "debian-9.2.1-x86_64": {
+      "name": "Debian x86_64 image",
+      "image_group": "linux",
+      "url": "https://drive.google.com/open?id=1fybAk4Qb-0Ig8W3immpwBLc-SZoN7UUh",
+      "iso": {
+        "url": "https://cdimage.debian.org/mirror/cdimage/archive/9.2.1/amd64/iso-cd/debian-9.2.1-amd64-netinst.iso"
+      },
+      "os": {
+        "name": "debian",
+        "version": "9.2.1",
+        "arch": "x86_64",
+        "build": "",
+        "binary_formats": ["elf"]
+      },
+      "hw": {
+        "default_disk_size": "4G",
+        "default_snapshot_size": "1024M",
+        "nic": "e1000"
+      }
+    },
+
+
+    "windows-xpsp3pro-i386": {
+      "name": "Windows XP Professional SP3 i386",
+      "image_group": "windows",
+      "url": "",
+      "iso": {
+        "name": "en_windows_xp_professional_with_service_pack_3_x86_cd_x14-80428.iso",
+        "sha1": "1c735b38931bf57fb14ebd9a9ba253ceb443d459"
+      },
+      "os": {
+        "product_key": "",
+        "name": "windows",
+        "version": "xpsp3pro",
+        "arch": "i386",
+        "build": "2600",
+        "binary_formats": ["pe"]
+      },
+      "hw": {
+        "default_disk_size": "12G",
+        "default_snapshot_size": "256M",
+        "nic": "pcnet",
+        "cpu": "core2duo"
+      }
+    },
+
+
+    "windows-7sp1ent-x86_64": {
+      "name": "Windows 7 Enterprise SP1 x86_64",
+      "image_group": "windows",
+      "url": "",
+      "iso": {
+         "name": "en_windows_7_enterprise_with_sp1_x64_dvd_u_677651.iso",
+         "sha1": "a491f985dccfb5863f31b728dddbedb2ff4df8d1"
+      },
+      "os": {
+       "family": "windows",
+       "name": "windows",
+       "version": "7sp1ent",
+       "arch": "x86_64",
+       "build": "7600.16385",
+       "binary_formats": ["pe"]
+      },
+      "hw": {
+        "default_disk_size": "30G",
+        "default_snapshot_size": "2G",
+        "nic": "e1000",
+        "cpu": "core2duo"
+      }
+    },
+
+
+    "windows-7sp1pro-i386": {
+      "name": "Windows 7 Professional SP1 i386",
+      "image_group": "windows",
+      "url": "",
+      "iso": {
+         "name": "en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso",
+         "sha1": "d89937df3a9bc2ec1a1486195fd308cd3dade928"
+      },
+      "os": {
+       "family": "windows",
+       "name": "windows",
+       "image_name": "Windows 7 Professional",
+       "version": "7sp1pro",
+       "arch": "i386",
+       "build": "7601.17514",
+       "binary_formats": ["pe"]
+      },
+      "hw": {
+        "default_disk_size": "30G",
+        "default_snapshot_size": "2G",
+        "nic": "e1000",
+        "cpu": "core2duo"
+      }
+    },
+
+    "windows-10pro1909-x86_64": {
+      "name": "Windows 10 Pro 1909 x86_64",
+      "image_group": "windows",
+      "url": "",
+      "iso": {
+        "name": "Win10_1909_English_x64.iso",
+        "sha1": "9dc9cd4d956c51fdaa9ecd0f86fdf0a1e35526d9"
+      },
+      "os": {
+        "product_key": "VK7JG-NPHTM-C97JM-9MPGT-3V66T",
+        "family": "windows",
+        "name": "windows",
+        "image_name": "Windows 10 Pro",
+        "version": "10pro1909",
+        "arch": "x86_64",
+        "build": "1909",
+        "binary_formats": ["pe"]
+      },
+      "hw": {
+        "default_disk_size": "30G",
+        "default_snapshot_size": "2G",
+        "nic": "e1000",
+        "cpu": "core2duo"
+      }
+    }
+  }
+}

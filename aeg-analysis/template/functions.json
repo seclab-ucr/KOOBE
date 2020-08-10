@@ -1,0 +1,19 @@
+{
+    "avoid": [
+        "memcpy_orig", "check_memory_region", "vsnprintf", "copy_user_generic_unrolled",
+        "memset_orig", "memcmp", "strlen", "_copy_from_user", "msg_print_ext_body",
+        "printk", "__d_lookup"
+    ],
+    "model": [
+        {"funcName": "copy_user_generic_unrolled", "args": 3},
+        {"funcName": "__memcpy", "args": 3},
+        {"funcName": "strncmp", "args": 3},
+        {"funcName": "csum_partial_copy_generic", "args": 6},
+        {"funcName": "do_csum", "args": 2},
+        {"funcName": "strlen", "args": 1}
+    ],
+    "skip": [
+        "save_stack"
+    ]
+}
+

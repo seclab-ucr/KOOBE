@@ -1,0 +1,8 @@
+{
+  "allocator": "kmalloc_2048",
+  "size": 2048,
+  "varlen": false,
+  "define": "void do_packet_sock_padding() {\n\tint i;\n\tfor (i = 0; i < %d; i++) {\n\t\tint t = syscall(__NR_socket, 0x11, 2, htobe16(0x0806));\n\t\tif (t == -1) {\n\t\t\tfail(\"[-] socket(SOCK_DGRAM)\");\n\t\t}\n\t}\n}\n\n",
+  "name": "do_packet_sock_padding",
+  "priority": 10
+}

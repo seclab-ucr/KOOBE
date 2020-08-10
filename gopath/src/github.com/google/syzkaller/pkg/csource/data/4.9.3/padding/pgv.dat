@@ -1,0 +1,8 @@
+{
+  "allocator": "page",
+  "size": 0,
+  "varlen": true,
+  "define": "[[SNIPPET_PGV]]",
+  "name": "do_pgv_padding",
+  "priority": 10
+}

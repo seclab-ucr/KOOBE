@@ -1,0 +1,8 @@
+{
+  "allocator": "kmalloc_2048",
+  "size": 2048,
+  "varlen": false,
+  "define": "[[CODE_PACKET_SOCK]]",
+  "name": "do_packet_sock_padding",
+  "priority": 10
+}

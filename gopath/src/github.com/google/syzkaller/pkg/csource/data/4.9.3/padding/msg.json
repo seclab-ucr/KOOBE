@@ -1,0 +1,8 @@
+{
+  "allocator": "kmalloc",
+  "size": 0,
+  "varlen": true,
+  "define": "void do_msg_padding() {\n#define PADDING_LEN     (%d)\n#define MSG_LEN         (PADDING_LEN - 0x30)\n#define MAX_MSG         (%d)\n#define MSG_PER_PROCESS (16384 / PADDING_LEN)\n#define NUM_PROCESS     (MAX_MSG / MSG_PER_PROCESS)\n    int i, j, msqid;\n    pid_t pid = -1;\n    char msg[MSG_LEN+sizeof(long)];\n    for (i = 0; i < NUM_PROCESS; i++) {\n        pid = fork();\n        if (pid == -1) {\n            perror(\"fork\");\n            exit(0);\n        }\n        if (pid == 0) {\n            if ((msqid = msgget(IPC_PRIVATE, 0644 | IPC_CREAT)) == -1) {\n                perror(\"msgget\");\n                exit(1);\n            }\n            for (j = 0; j < MSG_PER_PROCESS; j++) {\n                *(long*)msg = 0x4141414141414141 + j;\n                if (msgsnd(msqid, &msg, MSG_LEN, 0) == -1) {\n                    perror(\"msgsnd\");\n                    exit(1);\n                }\n            }\n            pause();\n        }\n\t\tsleep(1);\n    }\n    sleep(2);\n}\n\n",
+  "name": "do_msg_padding",
+  "priority": 0
+}

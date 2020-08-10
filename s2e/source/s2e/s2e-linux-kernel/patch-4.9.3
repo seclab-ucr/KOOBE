@@ -1,0 +1,1631 @@
+Only in linux-4.9.3/arch/sh/boot/compressed: vmlinux.scr
+Only in linux-4.9.3/arch/sh/boot/romimage: vmlinux.scr
+diff -ru linux-4.9.3/arch/x86/include/asm/cpufeatures.h KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/include/asm/cpufeatures.h
+--- linux-4.9.3/arch/x86/include/asm/cpufeatures.h	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/include/asm/cpufeatures.h	2020-07-01 15:04:30.420000594 -0700
+@@ -124,6 +124,7 @@
+ #define X86_FEATURE_CX16	( 4*32+13) /* CMPXCHG16B */
+ #define X86_FEATURE_XTPR	( 4*32+14) /* Send Task Priority Messages */
+ #define X86_FEATURE_PDCM	( 4*32+15) /* Performance Capabilities */
++#define X86_FEATURE_S2E		( 4*32+16) /* S2E support */
+ #define X86_FEATURE_PCID	( 4*32+17) /* Process Context Identifiers */
+ #define X86_FEATURE_DCA		( 4*32+18) /* Direct Cache Access */
+ #define X86_FEATURE_XMM4_1	( 4*32+19) /* "sse4_1" SSE-4.1 */
+diff -ru linux-4.9.3/arch/x86/Kconfig KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/Kconfig
+--- linux-4.9.3/arch/x86/Kconfig	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/Kconfig	2020-07-01 15:04:30.408000594 -0700
+@@ -2774,3 +2774,5 @@
+ source "arch/x86/kvm/Kconfig"
+ 
+ source "lib/Kconfig"
++
++source "kernel/s2e/Kconfig"
+diff -ru linux-4.9.3/arch/x86/kernel/traps.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/kernel/traps.c
+--- linux-4.9.3/arch/x86/kernel/traps.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/kernel/traps.c	2020-07-01 15:04:30.444000594 -0700
+@@ -65,6 +65,11 @@
+ #include <asm/mpx.h>
+ #include <asm/vm86.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ #ifdef CONFIG_X86_64
+ #include <asm/x86_init.h>
+ #include <asm/pgalloc.h>
+@@ -258,6 +263,15 @@
+ 		pr_cont("\n");
+ 	}
+ 
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("TRAP %ld at 0x%lx\n", error_code, task_pt_regs(tsk)->ip);
++#endif
++		s2e_linux_trap(tsk->pid, task_pt_regs(tsk)->ip, trapnr, signr, error_code);
++	}
++#endif
++
+ 	force_sig_info(signr, info ?: SEND_SIG_PRIV, tsk);
+ }
+ NOKPROBE_SYMBOL(do_trap);
+diff -ru linux-4.9.3/arch/x86/mm/fault.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/mm/fault.c
+--- linux-4.9.3/arch/x86/mm/fault.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/arch/x86/mm/fault.c	2020-07-01 15:04:30.456000594 -0700
+@@ -24,6 +24,11 @@
+ #include <asm/vm86.h>			/* struct vm86			*/
+ #include <asm/mmu_context.h>		/* vma_pkey()			*/
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+ 
+@@ -229,6 +234,18 @@
+ 	unsigned lsb = 0;
+ 	siginfo_t info;
+ 
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("SEGFAULT at 0x%lx\n", task_pt_regs(tsk)->ip);
++#endif
++		s2e_linux_segfault(current->pid,
++			task_pt_regs(tsk)->ip,
++			address,
++			fault);
++	}
++#endif
++
+ 	info.si_signo	= si_signo;
+ 	info.si_errno	= 0;
+ 	info.si_code	= si_code;
+Only in KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3: config-i386
+Only in KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3: config-x86_64
+Only in KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3: config-x86_64.origin
+diff -ru linux-4.9.3/fs/binfmt_elf.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/fs/binfmt_elf.c
+--- linux-4.9.3/fs/binfmt_elf.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/fs/binfmt_elf.c	2020-07-01 15:04:32.268000600 -0700
+@@ -9,36 +9,41 @@
+  * Copyright 1993, 1994: Eric Youngdale (ericy@cais.com).
+  */
+ 
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/fs.h>
+-#include <linux/mm.h>
+-#include <linux/mman.h>
+-#include <linux/errno.h>
+-#include <linux/signal.h>
++#include <asm/page.h>
++#include <asm/param.h>
++#include <asm/uaccess.h>
+ #include <linux/binfmts.h>
+-#include <linux/string.h>
+-#include <linux/file.h>
+-#include <linux/slab.h>
+-#include <linux/personality.h>
+-#include <linux/elfcore.h>
+-#include <linux/init.h>
+-#include <linux/highuid.h>
+ #include <linux/compiler.h>
++#include <linux/coredump.h>
++#include <linux/dax.h>
++#include <linux/elf-randomize.h>
++#include <linux/elf.h>
++#include <linux/elfcore.h>
++#include <linux/errno.h>
++#include <linux/file.h>
++#include <linux/fs.h>
+ #include <linux/highmem.h>
++#include <linux/highuid.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/mm.h>
++#include <linux/mman.h>
++#include <linux/module.h>
+ #include <linux/pagemap.h>
+-#include <linux/vmalloc.h>
+-#include <linux/security.h>
++#include <linux/personality.h>
+ #include <linux/random.h>
+-#include <linux/elf.h>
+-#include <linux/elf-randomize.h>
+-#include <linux/utsname.h>
+-#include <linux/coredump.h>
+ #include <linux/sched.h>
+-#include <linux/dax.h>
+-#include <asm/uaccess.h>
+-#include <asm/param.h>
+-#include <asm/page.h>
++#include <linux/security.h>
++#include <linux/signal.h>
++#include <linux/slab.h>
++#include <linux/string.h>
++#include <linux/utsname.h>
++#include <linux/vmalloc.h>
++
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#include <s2e/s2e.h>
++#endif
+ 
+ #ifndef user_long_t
+ #define user_long_t long
+@@ -48,8 +53,15 @@
+ #endif
+ 
+ static int load_elf_binary(struct linux_binprm *bprm);
++
++#ifdef CONFIG_S2E
++static unsigned long elf_map(struct file *, unsigned long, struct elf_phdr *,
++			     int, int, unsigned long,
++			     struct S2E_LINUXMON_COMMAND_MEMORY_MAP *);
++#else
+ static unsigned long elf_map(struct file *, unsigned long, struct elf_phdr *,
+-				int, int, unsigned long);
++			     int, int, unsigned long);
++#endif
+ 
+ #ifdef CONFIG_USELIB
+ static int load_elf_library(struct file *);
+@@ -64,29 +76,29 @@
+ #ifdef CONFIG_ELF_CORE
+ static int elf_core_dump(struct coredump_params *cprm);
+ #else
+-#define elf_core_dump	NULL
++#define elf_core_dump NULL
+ #endif
+ 
+ #if ELF_EXEC_PAGESIZE > PAGE_SIZE
+-#define ELF_MIN_ALIGN	ELF_EXEC_PAGESIZE
++#define ELF_MIN_ALIGN ELF_EXEC_PAGESIZE
+ #else
+-#define ELF_MIN_ALIGN	PAGE_SIZE
++#define ELF_MIN_ALIGN PAGE_SIZE
+ #endif
+ 
+ #ifndef ELF_CORE_EFLAGS
+-#define ELF_CORE_EFLAGS	0
++#define ELF_CORE_EFLAGS 0
+ #endif
+ 
+-#define ELF_PAGESTART(_v) ((_v) & ~(unsigned long)(ELF_MIN_ALIGN-1))
+-#define ELF_PAGEOFFSET(_v) ((_v) & (ELF_MIN_ALIGN-1))
++#define ELF_PAGESTART(_v) ((_v) & ~(unsigned long)(ELF_MIN_ALIGN - 1))
++#define ELF_PAGEOFFSET(_v) ((_v) & (ELF_MIN_ALIGN - 1))
+ #define ELF_PAGEALIGN(_v) (((_v) + ELF_MIN_ALIGN - 1) & ~(ELF_MIN_ALIGN - 1))
+ 
+ static struct linux_binfmt elf_format = {
+-	.module		= THIS_MODULE,
+-	.load_binary	= load_elf_binary,
+-	.load_shlib	= load_elf_library,
+-	.core_dump	= elf_core_dump,
+-	.min_coredump	= ELF_EXEC_PAGESIZE,
++	.module = THIS_MODULE,
++	.load_binary = load_elf_binary,
++	.load_shlib = load_elf_library,
++	.core_dump = elf_core_dump,
++	.min_coredump = ELF_EXEC_PAGESIZE,
+ };
+ 
+ #define BAD_ADDR(x) ((unsigned long)(x) >= TASK_SIZE)
+@@ -116,7 +128,7 @@
+ 	nbyte = ELF_PAGEOFFSET(elf_bss);
+ 	if (nbyte) {
+ 		nbyte = ELF_MIN_ALIGN - nbyte;
+-		if (clear_user((void __user *) elf_bss, nbyte))
++		if (clear_user((void __user *)elf_bss, nbyte))
+ 			return -EFAULT;
+ 	}
+ 	return 0;
+@@ -125,16 +137,21 @@
+ /* Let's use some macros to make this stack manipulation a little clearer */
+ #ifdef CONFIG_STACK_GROWSUP
+ #define STACK_ADD(sp, items) ((elf_addr_t __user *)(sp) + (items))
+-#define STACK_ROUND(sp, items) \
+-	((15 + (unsigned long) ((sp) + (items))) &~ 15UL)
+-#define STACK_ALLOC(sp, len) ({ \
+-	elf_addr_t __user *old_sp = (elf_addr_t __user *)sp; sp += len; \
+-	old_sp; })
++#define STACK_ROUND(sp, items) ((15 + (unsigned long)((sp) + (items))) & ~15UL)
++#define STACK_ALLOC(sp, len)                                                   \
++	({                                                                     \
++		elf_addr_t __user *old_sp = (elf_addr_t __user *)sp;           \
++		sp += len;                                                     \
++		old_sp;                                                        \
++	})
+ #else
+ #define STACK_ADD(sp, items) ((elf_addr_t __user *)(sp) - (items))
+-#define STACK_ROUND(sp, items) \
+-	(((unsigned long) (sp - items)) &~ 15UL)
+-#define STACK_ALLOC(sp, len) ({ sp -= len ; sp; })
++#define STACK_ROUND(sp, items) (((unsigned long)(sp - items)) & ~15UL)
++#define STACK_ALLOC(sp, len)                                                   \
++	({                                                                     \
++		sp -= len;                                                     \
++		sp;                                                            \
++	})
+ #endif
+ 
+ #ifndef ELF_BASE_PLATFORM
+@@ -146,9 +163,9 @@
+ #define ELF_BASE_PLATFORM NULL
+ #endif
+ 
+-static int
+-create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
+-		unsigned long load_addr, unsigned long interp_load_addr)
++static int create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
++			     unsigned long load_addr,
++			     unsigned long interp_load_addr)
+ {
+ 	unsigned long p = bprm->p;
+ 	int argc = bprm->argc;
+@@ -208,22 +225,22 @@
+ 	 * Generate 16 random bytes for userspace PRNG seeding.
+ 	 */
+ 	get_random_bytes(k_rand_bytes, sizeof(k_rand_bytes));
+-	u_rand_bytes = (elf_addr_t __user *)
+-		       STACK_ALLOC(p, sizeof(k_rand_bytes));
++	u_rand_bytes =
++		(elf_addr_t __user *)STACK_ALLOC(p, sizeof(k_rand_bytes));
+ 	if (__copy_to_user(u_rand_bytes, k_rand_bytes, sizeof(k_rand_bytes)))
+ 		return -EFAULT;
+ 
+ 	/* Create the ELF interpreter info */
+ 	elf_info = (elf_addr_t *)current->mm->saved_auxv;
+-	/* update AT_VECTOR_SIZE_BASE if the number of NEW_AUX_ENT() changes */
+-#define NEW_AUX_ENT(id, val) \
+-	do { \
+-		elf_info[ei_index++] = id; \
+-		elf_info[ei_index++] = val; \
++/* update AT_VECTOR_SIZE_BASE if the number of NEW_AUX_ENT() changes */
++#define NEW_AUX_ENT(id, val)                                                   \
++	do {                                                                   \
++		elf_info[ei_index++] = id;                                     \
++		elf_info[ei_index++] = val;                                    \
+ 	} while (0)
+ 
+ #ifdef ARCH_DLINFO
+-	/* 
++	/*
+ 	 * ARCH_DLINFO must come first so PPC can do its special alignment of
+ 	 * AUXV.
+ 	 * update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT() in
+@@ -244,15 +261,14 @@
+ 	NEW_AUX_ENT(AT_EUID, from_kuid_munged(cred->user_ns, cred->euid));
+ 	NEW_AUX_ENT(AT_GID, from_kgid_munged(cred->user_ns, cred->gid));
+ 	NEW_AUX_ENT(AT_EGID, from_kgid_munged(cred->user_ns, cred->egid));
+- 	NEW_AUX_ENT(AT_SECURE, security_bprm_secureexec(bprm));
++	NEW_AUX_ENT(AT_SECURE, security_bprm_secureexec(bprm));
+ 	NEW_AUX_ENT(AT_RANDOM, (elf_addr_t)(unsigned long)u_rand_bytes);
+ #ifdef ELF_HWCAP2
+ 	NEW_AUX_ENT(AT_HWCAP2, ELF_HWCAP2);
+ #endif
+ 	NEW_AUX_ENT(AT_EXECFN, bprm->exec);
+ 	if (k_platform) {
+-		NEW_AUX_ENT(AT_PLATFORM,
+-			    (elf_addr_t)(unsigned long)u_platform);
++		NEW_AUX_ENT(AT_PLATFORM, (elf_addr_t)(unsigned long)u_platform);
+ 	}
+ 	if (k_base_platform) {
+ 		NEW_AUX_ENT(AT_BASE_PLATFORM,
+@@ -274,7 +290,7 @@
+ 	items = (argc + 1) + (envc + 1) + 1;
+ 	bprm->p = STACK_ROUND(sp, items);
+ 
+-	/* Point sp at the lowest address on the stack */
++/* Point sp at the lowest address on the stack */
+ #ifdef CONFIG_STACK_GROWSUP
+ 	sp = (elf_addr_t __user *)bprm->p - items - ei_index;
+ 	bprm->exec = (unsigned long)sp; /* XXX: PARISC HACK */
+@@ -282,7 +298,6 @@
+ 	sp = (elf_addr_t __user *)bprm->p;
+ #endif
+ 
+-
+ 	/*
+ 	 * Grow the stack manually; some architectures have a limit on how
+ 	 * far ahead a user-space access may be in order to grow the stack.
+@@ -333,9 +348,17 @@
+ 
+ #ifndef elf_map
+ 
++#ifdef CONFIG_S2E
+ static unsigned long elf_map(struct file *filep, unsigned long addr,
+-		struct elf_phdr *eppnt, int prot, int type,
+-		unsigned long total_size)
++			     struct elf_phdr *eppnt, int prot, int type,
++			     unsigned long total_size,
++			     struct S2E_LINUXMON_COMMAND_MEMORY_MAP *mmap_desc)
++#else
++static unsigned long elf_map(struct file *filep, unsigned long addr,
++			     struct elf_phdr *eppnt, int prot, int type,
++			     unsigned long total_size)
++#endif
++
+ {
+ 	unsigned long map_addr;
+ 	unsigned long size = eppnt->p_filesz + ELF_PAGEOFFSET(eppnt->p_vaddr);
+@@ -360,11 +383,18 @@
+ 		total_size = ELF_PAGEALIGN(total_size);
+ 		map_addr = vm_mmap(filep, addr, total_size, prot, type, off);
+ 		if (!BAD_ADDR(map_addr))
+-			vm_munmap(map_addr+size, total_size-size);
++			vm_munmap(map_addr + size, total_size - size);
+ 	} else
+ 		map_addr = vm_mmap(filep, addr, size, prot, type, off);
+ 
+-	return(map_addr);
++#ifdef CONFIG_S2E
++	mmap_desc->address = addr;
++	mmap_desc->size = size;
++	mmap_desc->prot = prot;
++	mmap_desc->flag = type;
++	mmap_desc->pgoff = off;
++#endif
++	return (map_addr);
+ }
+ 
+ #endif /* !elf_map */
+@@ -384,7 +414,7 @@
+ 		return 0;
+ 
+ 	return cmds[last_idx].p_vaddr + cmds[last_idx].p_memsz -
+-				ELF_PAGESTART(cmds[first_idx].p_vaddr);
++	       ELF_PAGESTART(cmds[first_idx].p_vaddr);
+ }
+ 
+ /**
+@@ -411,7 +441,7 @@
+ 
+ 	/* Sanity check the number of program headers... */
+ 	if (elf_ex->e_phnum < 1 ||
+-		elf_ex->e_phnum > 65536U / sizeof(struct elf_phdr))
++	    elf_ex->e_phnum > 65536U / sizeof(struct elf_phdr))
+ 		goto out;
+ 
+ 	/* ...and their total size. */
+@@ -424,8 +454,8 @@
+ 		goto out;
+ 
+ 	/* Read in the program headers */
+-	retval = kernel_read(elf_file, elf_ex->e_phoff,
+-			     (char *)elf_phdata, size);
++	retval = kernel_read(elf_file, elf_ex->e_phoff, (char *)elf_phdata,
++			     size);
+ 	if (retval != size) {
+ 		err = (retval < 0) ? retval : -EIO;
+ 		goto out;
+@@ -457,7 +487,9 @@
+ struct arch_elf_state {
+ };
+ 
+-#define INIT_ARCH_ELF_STATE {}
++#define INIT_ARCH_ELF_STATE                                                    \
++	{                                                                      \
++	}
+ 
+ /**
+  * arch_elf_pt_proc() - check a PT_LOPROC..PT_HIPROC ELF program header
+@@ -477,8 +509,7 @@
+  * Return: Zero to proceed with the ELF load, non-zero to fail the ELF load
+  *         with that return code.
+  */
+-static inline int arch_elf_pt_proc(struct elfhdr *ehdr,
+-				   struct elf_phdr *phdr,
++static inline int arch_elf_pt_proc(struct elfhdr *ehdr, struct elf_phdr *phdr,
+ 				   struct file *elf, bool is_interp,
+ 				   struct arch_elf_state *state)
+ {
+@@ -516,9 +547,13 @@
+    is only provided so that we can read a.out libraries that have
+    an ELF header */
+ 
+-static unsigned long load_elf_interp(struct elfhdr *interp_elf_ex,
+-		struct file *interpreter, unsigned long *interp_map_addr,
+-		unsigned long no_base, struct elf_phdr *interp_elf_phdata)
++static unsigned long load_elf_interp(
++#ifdef CONFIG_S2E
++	const char *elf_interpreter,
++#endif
++	struct elfhdr *interp_elf_ex, struct file *interpreter,
++	unsigned long *interp_map_addr, unsigned long no_base,
++	struct elf_phdr *interp_elf_phdata)
+ {
+ 	struct elf_phdr *eppnt;
+ 	unsigned long load_addr = 0;
+@@ -527,25 +562,51 @@
+ 	unsigned long error = ~0UL;
+ 	unsigned long total_size;
+ 	int i;
++#ifdef CONFIG_S2E
++	struct S2E_LINUXMON_PHDR_DESC *elf_phdr = NULL;
++	size_t elf_phdr_size;
++#endif
+ 
+ 	/* First of all, some simple consistency checks */
+-	if (interp_elf_ex->e_type != ET_EXEC &&
+-	    interp_elf_ex->e_type != ET_DYN)
++	if (interp_elf_ex->e_type != ET_EXEC && interp_elf_ex->e_type != ET_DYN)
+ 		goto out;
+ 	if (!elf_check_arch(interp_elf_ex))
+ 		goto out;
+ 	if (!interpreter->f_op->mmap)
+ 		goto out;
+ 
+-	total_size = total_mapping_size(interp_elf_phdata,
+-					interp_elf_ex->e_phnum);
++	total_size =
++		total_mapping_size(interp_elf_phdata, interp_elf_ex->e_phnum);
+ 	if (!total_size) {
+ 		error = -EINVAL;
+ 		goto out;
+ 	}
+ 
++#ifdef CONFIG_S2E
++	elf_phdr_size = sizeof(*elf_phdr) * interp_elf_ex->e_phnum;
++	elf_phdr = kmalloc(elf_phdr_size, GFP_KERNEL);
++	if (!elf_phdr) {
++		error = -ENOMEM;
++		goto out;
++	}
++	memset(elf_phdr, 0, elf_phdr_size);
++#endif
++
+ 	eppnt = interp_elf_phdata;
+ 	for (i = 0; i < interp_elf_ex->e_phnum; i++, eppnt++) {
++#ifdef CONFIG_S2E
++		struct S2E_LINUXMON_PHDR_DESC *s2e_ppnt = &elf_phdr[i];
++		s2e_ppnt->index = i;
++		s2e_ppnt->p_type = eppnt->p_type;
++		s2e_ppnt->p_offset = eppnt->p_offset;
++		s2e_ppnt->p_vaddr = eppnt->p_vaddr;
++		s2e_ppnt->p_paddr = eppnt->p_paddr;
++		s2e_ppnt->p_filesz = eppnt->p_filesz;
++		s2e_ppnt->p_memsz = eppnt->p_memsz;
++		s2e_ppnt->p_flags = eppnt->p_flags;
++		s2e_ppnt->p_align = eppnt->p_align;
++#endif
++
+ 		if (eppnt->p_type == PT_LOAD) {
+ 			int elf_type = MAP_PRIVATE | MAP_DENYWRITE;
+ 			int elf_prot = 0;
+@@ -553,7 +614,7 @@
+ 			unsigned long k, map_addr;
+ 
+ 			if (eppnt->p_flags & PF_R)
+-		    		elf_prot = PROT_READ;
++				elf_prot = PROT_READ;
+ 			if (eppnt->p_flags & PF_W)
+ 				elf_prot |= PROT_WRITE;
+ 			if (eppnt->p_flags & PF_X)
+@@ -564,8 +625,16 @@
+ 			else if (no_base && interp_elf_ex->e_type == ET_DYN)
+ 				load_addr = -vaddr;
+ 
++#ifdef CONFIG_S2E
+ 			map_addr = elf_map(interpreter, load_addr + vaddr,
+-					eppnt, elf_prot, elf_type, total_size);
++					   eppnt, elf_prot, elf_type,
++					   total_size, &s2e_ppnt->mmap);
++
++#else
++			map_addr =
++				elf_map(interpreter, load_addr + vaddr, eppnt,
++					elf_prot, elf_type, total_size);
++#endif
+ 			total_size = 0;
+ 			if (!*interp_map_addr)
+ 				*interp_map_addr = map_addr;
+@@ -573,8 +642,11 @@
+ 			if (BAD_ADDR(map_addr))
+ 				goto out;
+ 
+-			if (!load_addr_set &&
+-			    interp_elf_ex->e_type == ET_DYN) {
++#ifdef CONFIG_S2E
++			s2e_ppnt->vma = map_addr;
++#endif
++
++			if (!load_addr_set && interp_elf_ex->e_type == ET_DYN) {
+ 				load_addr = map_addr - ELF_PAGESTART(vaddr);
+ 				load_addr_set = 1;
+ 			}
+@@ -585,8 +657,7 @@
+ 			 * <= p_memsize so it's only necessary to check p_memsz.
+ 			 */
+ 			k = load_addr + eppnt->p_vaddr;
+-			if (BAD_ADDR(k) ||
+-			    eppnt->p_filesz > eppnt->p_memsz ||
++			if (BAD_ADDR(k) || eppnt->p_filesz > eppnt->p_memsz ||
+ 			    eppnt->p_memsz > TASK_SIZE ||
+ 			    TASK_SIZE - eppnt->p_memsz < k) {
+ 				error = -ENOMEM;
+@@ -635,7 +706,24 @@
+ 	}
+ 
+ 	error = load_addr;
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_printf("elf_interpreter=%s interp_map_addr=%lx "
++			   "elf_entry=%#lx interp_load_addr=%#lx\n",
++			   elf_interpreter, *interp_map_addr, load_addr,
++			   load_addr);
++
++		s2e_linux_module_load(elf_interpreter, current->pid,
++				      interp_elf_ex->e_entry, elf_phdr,
++				      elf_phdr_size);
++	}
++#endif
++
+ out:
++	if (elf_phdr)
++		kfree(elf_phdr);
++
+ 	return error;
+ }
+ 
+@@ -645,7 +733,7 @@
+  */
+ 
+ #ifndef STACK_RND_MASK
+-#define STACK_RND_MASK (0x7ff >> (PAGE_SHIFT - 12))	/* 8MB of VA */
++#define STACK_RND_MASK (0x7ff >> (PAGE_SHIFT - 12)) /* 8MB of VA */
+ #endif
+ 
+ static unsigned long randomize_stack_top(unsigned long stack_top)
+@@ -653,7 +741,7 @@
+ 	unsigned long random_variable = 0;
+ 
+ 	if ((current->flags & PF_RANDOMIZE) &&
+-		!(current->personality & ADDR_NO_RANDOMIZE)) {
++	    !(current->personality & ADDR_NO_RANDOMIZE)) {
+ 		random_variable = get_random_long();
+ 		random_variable &= STACK_RND_MASK;
+ 		random_variable <<= PAGE_SHIFT;
+@@ -668,14 +756,18 @@
+ static int load_elf_binary(struct linux_binprm *bprm)
+ {
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+- 	unsigned long load_addr = 0, load_bias = 0;
++	unsigned long load_addr = 0, load_bias = 0;
+ 	int load_addr_set = 0;
+-	char * elf_interpreter = NULL;
++	char *elf_interpreter = NULL;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
++#ifdef CONFIG_S2E
++	struct S2E_LINUXMON_PHDR_DESC *elf_phdr = NULL;
++	size_t elf_phdr_size;
++#endif
+ 	unsigned long elf_bss, elf_brk;
+ 	int retval, i;
+-	unsigned long elf_entry;
++	unsigned long elf_entry = 0;
+ 	unsigned long interp_load_addr = 0;
+ 	unsigned long start_code, end_code, start_data, end_data;
+ 	unsigned long reloc_func_desc __maybe_unused = 0;
+@@ -684,15 +776,21 @@
+ 	struct {
+ 		struct elfhdr elf_ex;
+ 		struct elfhdr interp_elf_ex;
+-	} *loc;
++	} * loc;
+ 	struct arch_elf_state arch_state = INIT_ARCH_ELF_STATE;
+ 
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_process_load(current->pid, bprm->interp);
++	}
++#endif
++
+ 	loc = kmalloc(sizeof(*loc), GFP_KERNEL);
+ 	if (!loc) {
+ 		retval = -ENOMEM;
+ 		goto out_ret;
+ 	}
+-	
++
+ 	/* Get the exec-header */
+ 	loc->elf_ex = *((struct elfhdr *)bprm->buf);
+ 
+@@ -712,6 +810,17 @@
+ 	if (!elf_phdata)
+ 		goto out;
+ 
++#ifdef CONFIG_S2E
++	elf_phdr_size = sizeof(*elf_phdr) * loc->elf_ex.e_phnum;
++	elf_phdr = kmalloc(elf_phdr_size, GFP_KERNEL);
++	if (!elf_phdr) {
++		retval = -ENOMEM;
++		goto out;
++	}
++
++	memset(elf_phdr, 0, elf_phdr_size);
++#endif
++
+ 	elf_ppnt = elf_phdata;
+ 	elf_bss = 0;
+ 	elf_brk = 0;
+@@ -728,13 +837,13 @@
+ 			 * is an a.out format binary
+ 			 */
+ 			retval = -ENOEXEC;
+-			if (elf_ppnt->p_filesz > PATH_MAX || 
++			if (elf_ppnt->p_filesz > PATH_MAX ||
+ 			    elf_ppnt->p_filesz < 2)
+ 				goto out_free_ph;
+ 
+ 			retval = -ENOMEM;
+-			elf_interpreter = kmalloc(elf_ppnt->p_filesz,
+-						  GFP_KERNEL);
++			elf_interpreter =
++				kmalloc(elf_ppnt->p_filesz, GFP_KERNEL);
+ 			if (!elf_interpreter)
+ 				goto out_free_ph;
+ 
+@@ -808,8 +917,8 @@
+ 			goto out_free_dentry;
+ 
+ 		/* Load the interpreter program headers */
+-		interp_elf_phdata = load_elf_phdrs(&loc->interp_elf_ex,
+-						   interpreter);
++		interp_elf_phdata =
++			load_elf_phdrs(&loc->interp_elf_ex, interpreter);
+ 		if (!interp_elf_phdata)
+ 			goto out_free_dentry;
+ 
+@@ -832,9 +941,8 @@
+ 	 * still possible to return an error to the code that invoked
+ 	 * the exec syscall.
+ 	 */
+-	retval = arch_check_elf(&loc->elf_ex,
+-				!!interpreter, &loc->interp_elf_ex,
+-				&arch_state);
++	retval = arch_check_elf(&loc->elf_ex, !!interpreter,
++				&loc->interp_elf_ex, &arch_state);
+ 	if (retval)
+ 		goto out_free_dentry;
+ 
+@@ -861,23 +969,37 @@
+ 				 executable_stack);
+ 	if (retval < 0)
+ 		goto out_free_dentry;
+-	
++
+ 	current->mm->start_stack = bprm->p;
+ 
+ 	/* Now we do a little grungy work by mmapping the ELF image into
+ 	   the correct location in memory. */
+-	for(i = 0, elf_ppnt = elf_phdata;
+-	    i < loc->elf_ex.e_phnum; i++, elf_ppnt++) {
++	for (i = 0, elf_ppnt = elf_phdata; i < loc->elf_ex.e_phnum;
++	     i++, elf_ppnt++) {
+ 		int elf_prot = 0, elf_flags;
+ 		unsigned long k, vaddr;
+ 		unsigned long total_size = 0;
+ 
++#ifdef CONFIG_S2E
++		struct S2E_LINUXMON_PHDR_DESC *s2e_ppnt = &elf_phdr[i];
++		s2e_ppnt->index = i;
++		s2e_ppnt->vma = 0;
++		s2e_ppnt->p_type = elf_ppnt->p_type;
++		s2e_ppnt->p_offset = elf_ppnt->p_offset;
++		s2e_ppnt->p_vaddr = elf_ppnt->p_vaddr;
++		s2e_ppnt->p_paddr = elf_ppnt->p_paddr;
++		s2e_ppnt->p_filesz = elf_ppnt->p_filesz;
++		s2e_ppnt->p_memsz = elf_ppnt->p_memsz;
++		s2e_ppnt->p_flags = elf_ppnt->p_flags;
++		s2e_ppnt->p_align = elf_ppnt->p_align;
++#endif
++
+ 		if (elf_ppnt->p_type != PT_LOAD)
+ 			continue;
+ 
+-		if (unlikely (elf_brk > elf_bss)) {
++		if (unlikely(elf_brk > elf_bss)) {
+ 			unsigned long nbyte;
+-	            
++
+ 			/* There was a PT_LOAD segment with p_memsz > p_filesz
+ 			   before this one. Map anonymous pages, if needed,
+ 			   and clear the area.  */
+@@ -891,7 +1013,8 @@
+ 				if (nbyte > elf_brk - elf_bss)
+ 					nbyte = elf_brk - elf_bss;
+ 				if (clear_user((void __user *)elf_bss +
+-							load_bias, nbyte)) {
++						       load_bias,
++					       nbyte)) {
+ 					/*
+ 					 * This bss-zeroing can fail if the ELF
+ 					 * file specifies odd protections. So
+@@ -930,20 +1053,30 @@
+ 			}
+ 		}
+ 
++#ifdef CONFIG_S2E
++		error = elf_map(bprm->file, load_bias + vaddr, elf_ppnt,
++				elf_prot, elf_flags, total_size,
++				&s2e_ppnt->mmap);
++#else
+ 		error = elf_map(bprm->file, load_bias + vaddr, elf_ppnt,
+ 				elf_prot, elf_flags, total_size);
++#endif
+ 		if (BAD_ADDR(error)) {
+-			retval = IS_ERR((void *)error) ?
+-				PTR_ERR((void*)error) : -EINVAL;
++			retval = IS_ERR((void *)error) ? PTR_ERR((void *)error)
++						       : -EINVAL;
+ 			goto out_free_dentry;
+ 		}
+ 
++#ifdef CONFIG_S2E
++		s2e_ppnt->vma = error;
++#endif
++
+ 		if (!load_addr_set) {
+ 			load_addr_set = 1;
+ 			load_addr = (elf_ppnt->p_vaddr - elf_ppnt->p_offset);
+ 			if (loc->elf_ex.e_type == ET_DYN) {
+ 				load_bias += error -
+-				             ELF_PAGESTART(load_bias + vaddr);
++					     ELF_PAGESTART(load_bias + vaddr);
+ 				load_addr += load_bias;
+ 				reloc_func_desc = load_bias;
+ 			}
+@@ -1004,10 +1137,12 @@
+ 	if (elf_interpreter) {
+ 		unsigned long interp_map_addr = 0;
+ 
+-		elf_entry = load_elf_interp(&loc->interp_elf_ex,
+-					    interpreter,
+-					    &interp_map_addr,
+-					    load_bias, interp_elf_phdata);
++		elf_entry = load_elf_interp(
++#ifdef CONFIG_S2E
++			elf_interpreter,
++#endif
++			&loc->interp_elf_ex, interpreter, &interp_map_addr,
++			load_bias, interp_elf_phdata);
+ 		if (!IS_ERR((void *)elf_entry)) {
+ 			/*
+ 			 * load_elf_interp() returns relocation
+@@ -1017,14 +1152,15 @@
+ 			elf_entry += loc->interp_elf_ex.e_entry;
+ 		}
+ 		if (BAD_ADDR(elf_entry)) {
+-			retval = IS_ERR((void *)elf_entry) ?
+-					(int)elf_entry : -EINVAL;
++			retval = IS_ERR((void *)elf_entry) ? (int)elf_entry
++							   : -EINVAL;
+ 			goto out_free_dentry;
+ 		}
+ 		reloc_func_desc = interp_load_addr;
+ 
+ 		allow_write_access(interpreter);
+ 		fput(interpreter);
++
+ 		kfree(elf_interpreter);
+ 	} else {
+ 		elf_entry = loc->elf_ex.e_entry;
+@@ -1045,8 +1181,8 @@
+ 		goto out;
+ #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
+ 
+-	retval = create_elf_tables(bprm, &loc->elf_ex,
+-			  load_addr, interp_load_addr);
++	retval = create_elf_tables(bprm, &loc->elf_ex, load_addr,
++				   interp_load_addr);
+ 	if (retval < 0)
+ 		goto out;
+ 	/* N.B. passed_fileno might not be initialized? */
+@@ -1090,11 +1226,23 @@
+ 	start_thread(regs, elf_entry, bprm->p);
+ 	retval = 0;
+ out:
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !retval) {
++		s2e_linux_module_load(bprm->interp, current->pid,
++				      loc->elf_ex.e_entry, elf_phdr,
++				      elf_phdr_size);
++	}
++
++	if (elf_phdr)
++		kfree(elf_phdr);
++#endif
++
+ 	kfree(loc);
+ out_ret:
++
+ 	return retval;
+ 
+-	/* error cleanup */
++/* error cleanup */
+ out_free_dentry:
+ 	kfree(interp_elf_phdata);
+ 	allow_write_access(interpreter);
+@@ -1147,7 +1295,7 @@
+ 	if (retval != j)
+ 		goto out_free_ph;
+ 
+-	for (j = 0, i = 0; i<elf_ex.e_phnum; i++)
++	for (j = 0, i = 0; i < elf_ex.e_phnum; i++)
+ 		if ((eppnt + i)->p_type == PT_LOAD)
+ 			j++;
+ 	if (j != 1)
+@@ -1157,14 +1305,11 @@
+ 		eppnt++;
+ 
+ 	/* Now use mmap to map the library into memory. */
+-	error = vm_mmap(file,
+-			ELF_PAGESTART(eppnt->p_vaddr),
+-			(eppnt->p_filesz +
+-			 ELF_PAGEOFFSET(eppnt->p_vaddr)),
++	error = vm_mmap(file, ELF_PAGESTART(eppnt->p_vaddr),
++			(eppnt->p_filesz + ELF_PAGEOFFSET(eppnt->p_vaddr)),
+ 			PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			MAP_FIXED | MAP_PRIVATE | MAP_DENYWRITE,
+-			(eppnt->p_offset -
+-			 ELF_PAGEOFFSET(eppnt->p_vaddr)));
++			(eppnt->p_offset - ELF_PAGEOFFSET(eppnt->p_vaddr)));
+ 	if (error != ELF_PAGESTART(eppnt->p_vaddr))
+ 		goto out_free_ph;
+ 
+@@ -1174,8 +1319,8 @@
+ 		goto out_free_ph;
+ 	}
+ 
+-	len = ELF_PAGESTART(eppnt->p_filesz + eppnt->p_vaddr +
+-			    ELF_MIN_ALIGN - 1);
++	len = ELF_PAGESTART(eppnt->p_filesz + eppnt->p_vaddr + ELF_MIN_ALIGN -
++			    1);
+ 	bss = eppnt->p_memsz + eppnt->p_vaddr;
+ 	if (bss > len) {
+ 		error = vm_brk(len, bss - len);
+@@ -1236,7 +1381,7 @@
+ static unsigned long vma_dump_size(struct vm_area_struct *vma,
+ 				   unsigned long mm_flags)
+ {
+-#define FILTER(type)	(mm_flags & (1UL << MMF_DUMP_##type))
++#define FILTER(type) (mm_flags & (1UL << MMF_DUMP_##type))
+ 
+ 	/* always dump the vdso and vsyscall sections */
+ 	if (always_dump_vma(vma))
+@@ -1269,8 +1414,9 @@
+ 
+ 	/* By default, dump shared memory if mapped from an anonymous file. */
+ 	if (vma->vm_flags & VM_SHARED) {
+-		if (file_inode(vma->vm_file)->i_nlink == 0 ?
+-		    FILTER(ANON_SHARED) : FILTER(MAPPED_SHARED))
++		if (file_inode(vma->vm_file)->i_nlink == 0
++			    ? FILTER(ANON_SHARED)
++			    : FILTER(MAPPED_SHARED))
+ 			goto whole;
+ 		return 0;
+ 	}
+@@ -1289,9 +1435,9 @@
+ 	 * check for an ELF header.  If we find one, dump the first page to
+ 	 * aid in determining what was mapped here.
+ 	 */
+-	if (FILTER(ELF_HEADERS) &&
+-	    vma->vm_pgoff == 0 && (vma->vm_flags & VM_READ)) {
+-		u32 __user *header = (u32 __user *) vma->vm_start;
++	if (FILTER(ELF_HEADERS) && vma->vm_pgoff == 0 &&
++	    (vma->vm_flags & VM_READ)) {
++		u32 __user *header = (u32 __user *)vma->vm_start;
+ 		u32 word;
+ 		mm_segment_t fs = get_fs();
+ 		/*
+@@ -1318,7 +1464,7 @@
+ 			return PAGE_SIZE;
+ 	}
+ 
+-#undef	FILTER
++#undef FILTER
+ 
+ 	return 0;
+ 
+@@ -1327,8 +1473,7 @@
+ }
+ 
+ /* An ELF note in memory */
+-struct memelfnote
+-{
++struct memelfnote {
+ 	const char *name;
+ 	int type;
+ 	unsigned int datasz;
+@@ -1354,12 +1499,12 @@
+ 	en.n_type = men->type;
+ 
+ 	return dump_emit(cprm, &en, sizeof(en)) &&
+-	    dump_emit(cprm, men->name, en.n_namesz) && dump_align(cprm, 4) &&
+-	    dump_emit(cprm, men->data, men->datasz) && dump_align(cprm, 4);
++	       dump_emit(cprm, men->name, en.n_namesz) && dump_align(cprm, 4) &&
++	       dump_emit(cprm, men->data, men->datasz) && dump_align(cprm, 4);
+ }
+ 
+-static void fill_elf_header(struct elfhdr *elf, int segs,
+-			    u16 machine, u32 flags)
++static void fill_elf_header(struct elfhdr *elf, int segs, u16 machine,
++			    u32 flags)
+ {
+ 	memset(elf, 0, sizeof(*elf));
+ 
+@@ -1394,8 +1539,8 @@
+ 	return;
+ }
+ 
+-static void fill_note(struct memelfnote *note, const char *name, int type, 
+-		unsigned int sz, void *data)
++static void fill_note(struct memelfnote *note, const char *name, int type,
++		      unsigned int sz, void *data)
+ {
+ 	note->name = name;
+ 	note->type = type;
+@@ -1408,8 +1553,8 @@
+  * fill up all the fields in prstatus from the given task struct, except
+  * registers which need to be filled up separately.
+  */
+-static void fill_prstatus(struct elf_prstatus *prstatus,
+-		struct task_struct *p, long signr)
++static void fill_prstatus(struct elf_prstatus *prstatus, struct task_struct *p,
++			  long signr)
+ {
+ 	prstatus->pr_info.si_signo = prstatus->pr_cursig = signr;
+ 	prstatus->pr_sigpend = p->pending.signal.sig[0];
+@@ -1446,17 +1591,17 @@
+ {
+ 	const struct cred *cred;
+ 	unsigned int i, len;
+-	
++
+ 	/* first copy the parameters from user space */
+ 	memset(psinfo, 0, sizeof(struct elf_prpsinfo));
+ 
+ 	len = mm->arg_end - mm->arg_start;
+ 	if (len >= ELF_PRARGSZ)
+-		len = ELF_PRARGSZ-1;
++		len = ELF_PRARGSZ - 1;
+ 	if (copy_from_user(&psinfo->pr_psargs,
+-		           (const char __user *)mm->arg_start, len))
++			   (const char __user *)mm->arg_start, len))
+ 		return -EFAULT;
+-	for(i = 0; i < len; i++)
++	for (i = 0; i < len; i++)
+ 		if (psinfo->pr_psargs[i] == 0)
+ 			psinfo->pr_psargs[i] = ' ';
+ 	psinfo->pr_psargs[len] = 0;
+@@ -1480,13 +1625,13 @@
+ 	SET_GID(psinfo->pr_gid, from_kgid_munged(cred->user_ns, cred->gid));
+ 	rcu_read_unlock();
+ 	strncpy(psinfo->pr_fname, p->comm, sizeof(psinfo->pr_fname));
+-	
++
+ 	return 0;
+ }
+ 
+ static void fill_auxv_note(struct memelfnote *note, struct mm_struct *mm)
+ {
+-	elf_addr_t *auxv = (elf_addr_t *) mm->saved_auxv;
++	elf_addr_t *auxv = (elf_addr_t *)mm->saved_auxv;
+ 	int i = 0;
+ 	do
+ 		i += 2;
+@@ -1495,16 +1640,16 @@
+ }
+ 
+ static void fill_siginfo_note(struct memelfnote *note, user_siginfo_t *csigdata,
+-		const siginfo_t *siginfo)
++			      const siginfo_t *siginfo)
+ {
+ 	mm_segment_t old_fs = get_fs();
+ 	set_fs(KERNEL_DS);
+-	copy_siginfo_to_user((user_siginfo_t __user *) csigdata, siginfo);
++	copy_siginfo_to_user((user_siginfo_t __user *)csigdata, siginfo);
+ 	set_fs(old_fs);
+ 	fill_note(note, "CORE", NT_SIGINFO, sizeof(*csigdata), csigdata);
+ }
+ 
+-#define MAX_FILE_NOTE_SIZE (4*1024*1024)
++#define MAX_FILE_NOTE_SIZE (4 * 1024 * 1024)
+ /*
+  * Format of NT_FILE note:
+  *
+@@ -1529,7 +1674,7 @@
+ 	size = count * 64;
+ 
+ 	names_ofs = (2 + 3 * count) * sizeof(data[0]);
+- alloc:
++alloc:
+ 	if (size >= MAX_FILE_NOTE_SIZE) /* paranoia check */
+ 		return -EINVAL;
+ 	size = round_up(size, PAGE_SIZE);
+@@ -1646,8 +1791,8 @@
+ 	 * We assume that regset 0 is NT_PRSTATUS.
+ 	 */
+ 	fill_prstatus(&t->prstatus, t->task, signr);
+-	(void) view->regsets[0].get(t->task, &view->regsets[0], 0, regset_size,
+-				    &t->prstatus.pr_reg, NULL);
++	(void)view->regsets[0].get(t->task, &view->regsets[0], 0, regset_size,
++				   &t->prstatus.pr_reg, NULL);
+ 
+ 	fill_note(&t->notes[0], "CORE", NT_PRSTATUS,
+ 		  PRSTATUS_SIZE(t->prstatus, regset_size), &t->prstatus);
+@@ -1670,18 +1815,17 @@
+ 			void *data = kmalloc(size, GFP_KERNEL);
+ 			if (unlikely(!data))
+ 				return 0;
+-			ret = regset->get(t->task, regset,
+-					  0, size, data, NULL);
++			ret = regset->get(t->task, regset, 0, size, data, NULL);
+ 			if (unlikely(ret))
+ 				kfree(data);
+ 			else {
+ 				if (regset->core_note_type != NT_PRFPREG)
+ 					fill_note(&t->notes[i], "LINUX",
+-						  regset->core_note_type,
+-						  size, data);
++						  regset->core_note_type, size,
++						  data);
+ 				else {
+-					SET_PR_FPVALID(&t->prstatus,
+-							1, regset_size);
++					SET_PR_FPVALID(&t->prstatus, 1,
++						       regset_size);
+ 					fill_note(&t->notes[i], "CORE",
+ 						  NT_PRFPREG, size, data);
+ 				}
+@@ -1694,8 +1838,8 @@
+ }
+ 
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+-			  struct elf_note_info *info,
+-			  const siginfo_t *siginfo, struct pt_regs *regs)
++			  struct elf_note_info *info, const siginfo_t *siginfo,
++			  struct pt_regs *regs)
+ {
+ 	struct task_struct *dump_task = current;
+ 	const struct user_regset_view *view = task_user_regset_view(dump_task);
+@@ -1736,8 +1880,7 @@
+ 	/*
+ 	 * Initialize the ELF file header.
+ 	 */
+-	fill_elf_header(elf, phdrs,
+-			view->e_machine, view->e_flags);
++	fill_elf_header(elf, phdrs, view->e_machine, view->e_flags);
+ 
+ 	/*
+ 	 * Allocate a structure for each thread.
+@@ -1767,7 +1910,8 @@
+ 	 * Now fill in each thread's information.
+ 	 */
+ 	for (t = info->thread; t != NULL; t = t->next)
+-		if (!fill_thread_core_info(t, view, siginfo->si_signo, &info->size))
++		if (!fill_thread_core_info(t, view, siginfo->si_signo,
++					   &info->size))
+ 			return 0;
+ 
+ 	/*
+@@ -1815,13 +1959,11 @@
+ 			return 0;
+ 		if (first && !writenote(&info->auxv, cprm))
+ 			return 0;
+-		if (first && info->files.data &&
+-				!writenote(&info->files, cprm))
++		if (first && info->files.data && !writenote(&info->files, cprm))
+ 			return 0;
+ 
+ 		for (i = 1; i < info->thread_notes; ++i)
+-			if (t->notes[i].data &&
+-			    !writenote(&t->notes[i], cprm))
++			if (t->notes[i].data && !writenote(&t->notes[i], cprm))
+ 				return 0;
+ 
+ 		first = false;
+@@ -1850,14 +1992,13 @@
+ #else
+ 
+ /* Here is the structure in which status of each thread is captured. */
+-struct elf_thread_status
+-{
++struct elf_thread_status {
+ 	struct list_head list;
+-	struct elf_prstatus prstatus;	/* NT_PRSTATUS */
+-	elf_fpregset_t fpu;		/* NT_PRFPREG */
++	struct elf_prstatus prstatus; /* NT_PRSTATUS */
++	elf_fpregset_t fpu;	   /* NT_PRFPREG */
+ 	struct task_struct *thread;
+ #ifdef ELF_CORE_COPY_XFPREGS
+-	elf_fpxregset_t xfpu;		/* ELF_CORE_XFPREG_TYPE */
++	elf_fpxregset_t xfpu; /* ELF_CORE_XFPREG_TYPE */
+ #endif
+ 	struct memelfnote notes[3];
+ 	int num_notes;
+@@ -1875,15 +2016,15 @@
+ 	t->num_notes = 0;
+ 
+ 	fill_prstatus(&t->prstatus, p, signr);
+-	elf_core_copy_task_regs(p, &t->prstatus.pr_reg);	
+-	
++	elf_core_copy_task_regs(p, &t->prstatus.pr_reg);
++
+ 	fill_note(&t->notes[0], "CORE", NT_PRSTATUS, sizeof(t->prstatus),
+ 		  &(t->prstatus));
+ 	t->num_notes++;
+ 	sz += notesize(&t->notes[0]);
+ 
+-	if ((t->prstatus.pr_fpvalid = elf_core_copy_task_fpregs(p, NULL,
+-								&t->fpu))) {
++	if ((t->prstatus.pr_fpvalid =
++		     elf_core_copy_task_fpregs(p, NULL, &t->fpu))) {
+ 		fill_note(&t->notes[1], "CORE", NT_PRFPREG, sizeof(t->fpu),
+ 			  &(t->fpu));
+ 		t->num_notes++;
+@@ -1897,15 +2038,15 @@
+ 		t->num_notes++;
+ 		sz += notesize(&t->notes[2]);
+ 	}
+-#endif	
++#endif
+ 	return sz;
+ }
+ 
+ struct elf_note_info {
+ 	struct memelfnote *notes;
+ 	struct memelfnote *notes_files;
+-	struct elf_prstatus *prstatus;	/* NT_PRSTATUS */
+-	struct elf_prpsinfo *psinfo;	/* NT_PRPSINFO */
++	struct elf_prstatus *prstatus; /* NT_PRSTATUS */
++	struct elf_prpsinfo *psinfo;   /* NT_PRPSINFO */
+ 	struct list_head thread_list;
+ 	elf_fpregset_t *fpu;
+ #ifdef ELF_CORE_COPY_XFPREGS
+@@ -1943,8 +2084,8 @@
+ }
+ 
+ static int fill_note_info(struct elfhdr *elf, int phdrs,
+-			  struct elf_note_info *info,
+-			  const siginfo_t *siginfo, struct pt_regs *regs)
++			  struct elf_note_info *info, const siginfo_t *siginfo,
++			  struct pt_regs *regs)
+ {
+ 	struct list_head *t;
+ 	struct core_thread *ct;
+@@ -1953,8 +2094,7 @@
+ 	if (!elf_note_info_init(info))
+ 		return 0;
+ 
+-	for (ct = current->mm->core_state->dumper.next;
+-					ct; ct = ct->next) {
++	for (ct = current->mm->core_state->dumper.next; ct; ct = ct->next) {
+ 		ets = kzalloc(sizeof(*ets), GFP_KERNEL);
+ 		if (!ets)
+ 			return 0;
+@@ -1963,7 +2103,8 @@
+ 		list_add(&ets->list, &info->thread_list);
+ 	}
+ 
+-	list_for_each(t, &info->thread_list) {
++	list_for_each(t, &info->thread_list)
++	{
+ 		int sz;
+ 
+ 		ets = list_entry(t, struct elf_thread_status, list);
+@@ -1983,11 +2124,11 @@
+ 	 * with info from their /proc.
+ 	 */
+ 
+-	fill_note(info->notes + 0, "CORE", NT_PRSTATUS,
+-		  sizeof(*info->prstatus), info->prstatus);
++	fill_note(info->notes + 0, "CORE", NT_PRSTATUS, sizeof(*info->prstatus),
++		  info->prstatus);
+ 	fill_psinfo(info->psinfo, current->group_leader, current->mm);
+-	fill_note(info->notes + 1, "CORE", NT_PRPSINFO,
+-		  sizeof(*info->psinfo), info->psinfo);
++	fill_note(info->notes + 1, "CORE", NT_PRPSINFO, sizeof(*info->psinfo),
++		  info->psinfo);
+ 
+ 	fill_siginfo_note(info->notes + 2, &info->csigdata, siginfo);
+ 	fill_auxv_note(info->notes + 3, current->mm);
+@@ -1999,16 +2140,16 @@
+ 	}
+ 
+ 	/* Try to dump the FPU. */
+-	info->prstatus->pr_fpvalid = elf_core_copy_task_fpregs(current, regs,
+-							       info->fpu);
++	info->prstatus->pr_fpvalid =
++		elf_core_copy_task_fpregs(current, regs, info->fpu);
+ 	if (info->prstatus->pr_fpvalid)
+-		fill_note(info->notes + info->numnote++,
+-			  "CORE", NT_PRFPREG, sizeof(*info->fpu), info->fpu);
++		fill_note(info->notes + info->numnote++, "CORE", NT_PRFPREG,
++			  sizeof(*info->fpu), info->fpu);
+ #ifdef ELF_CORE_COPY_XFPREGS
+ 	if (elf_core_copy_task_xfpregs(current, info->xfpu))
+-		fill_note(info->notes + info->numnote++,
+-			  "LINUX", ELF_CORE_XFPREG_TYPE,
+-			  sizeof(*info->xfpu), info->xfpu);
++		fill_note(info->notes + info->numnote++, "LINUX",
++			  ELF_CORE_XFPREG_TYPE, sizeof(*info->xfpu),
++			  info->xfpu);
+ #endif
+ 
+ 	return 1;
+@@ -2038,9 +2179,10 @@
+ 			return 0;
+ 
+ 	/* write out the thread status notes section */
+-	list_for_each(t, &info->thread_list) {
++	list_for_each(t, &info->thread_list)
++	{
+ 		struct elf_thread_status *tmp =
+-				list_entry(t, struct elf_thread_status, list);
++			list_entry(t, struct elf_thread_status, list);
+ 
+ 		for (i = 0; i < tmp->num_notes; i++)
+ 			if (!writenote(&tmp->notes[i], cprm))
+@@ -2087,7 +2229,7 @@
+  * will visit `gate_vma' prior to terminating the search.
+  */
+ static struct vm_area_struct *next_vma(struct vm_area_struct *this_vma,
+-					struct vm_area_struct *gate_vma)
++				       struct vm_area_struct *gate_vma)
+ {
+ 	struct vm_area_struct *ret;
+ 
+@@ -2131,7 +2273,7 @@
+ 	struct vm_area_struct *vma, *gate_vma;
+ 	struct elfhdr *elf = NULL;
+ 	loff_t offset = 0, dataoff;
+-	struct elf_note_info info = { };
++	struct elf_note_info info = {};
+ 	struct elf_phdr *phdr4note = NULL;
+ 	struct elf_shdr *shdr4extnum = NULL;
+ 	Elf_Half e_phnum;
+@@ -2140,7 +2282,7 @@
+ 
+ 	/*
+ 	 * We no longer stop all VM operations.
+-	 * 
++	 *
+ 	 * This is because those proceses that could possibly change map_count
+ 	 * or the mmap / vma pages are now blocked in do_exit on current
+ 	 * finishing this core dump.
+@@ -2149,7 +2291,7 @@
+ 	 * the map_count or the pages allocated. So no possibility of crashing
+ 	 * exists while dumping the mm->vm_next areas to the core file.
+ 	 */
+-  
++
+ 	/* alloc memory for large data structures: too large to be on stack */
+ 	elf = kmalloc(sizeof(*elf), GFP_KERNEL);
+ 	if (!elf)
+@@ -2185,8 +2327,8 @@
+ 	fs = get_fs();
+ 	set_fs(KERNEL_DS);
+ 
+-	offset += sizeof(*elf);				/* Elf header */
+-	offset += segs * sizeof(struct elf_phdr);	/* Program headers */
++	offset += sizeof(*elf);			  /* Elf header */
++	offset += segs * sizeof(struct elf_phdr); /* Program headers */
+ 
+ 	/* Write notes phdr entry */
+ 	{
+@@ -2209,7 +2351,7 @@
+ 		goto end_coredump;
+ 
+ 	for (i = 0, vma = first_vma(current, gate_vma); vma != NULL;
+-			vma = next_vma(vma, gate_vma)) {
++	     vma = next_vma(vma, gate_vma)) {
+ 		unsigned long dump_size;
+ 
+ 		dump_size = vma_dump_size(vma, cprm->mm_flags);
+@@ -2238,7 +2380,7 @@
+ 
+ 	/* Write program headers for segments dump */
+ 	for (i = 0, vma = first_vma(current, gate_vma); vma != NULL;
+-			vma = next_vma(vma, gate_vma)) {
++	     vma = next_vma(vma, gate_vma)) {
+ 		struct elf_phdr phdr;
+ 
+ 		phdr.p_type = PT_LOAD;
+@@ -2262,7 +2404,7 @@
+ 	if (!elf_core_write_extra_phdrs(cprm, offset))
+ 		goto end_coredump;
+ 
+- 	/* write out the notes section */
++	/* write out the notes section */
+ 	if (!write_note_info(&info, cprm))
+ 		goto end_coredump;
+ 
+@@ -2274,7 +2416,7 @@
+ 		goto end_coredump;
+ 
+ 	for (i = 0, vma = first_vma(current, gate_vma); vma != NULL;
+-			vma = next_vma(vma, gate_vma)) {
++	     vma = next_vma(vma, gate_vma)) {
+ 		unsigned long addr;
+ 		unsigned long end;
+ 
+@@ -2318,7 +2460,7 @@
+ 	return has_dumped;
+ }
+ 
+-#endif		/* CONFIG_ELF_CORE */
++#endif /* CONFIG_ELF_CORE */
+ 
+ static int __init init_elf_binfmt(void)
+ {
+diff -ru linux-4.9.3/fs/notify/inotify/inotify_fsnotify.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/fs/notify/inotify/inotify_fsnotify.c
+--- linux-4.9.3/fs/notify/inotify/inotify_fsnotify.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/fs/notify/inotify/inotify_fsnotify.c	2020-08-05 12:59:29.752000773 -0700
+@@ -88,6 +88,7 @@
+ 	if (file_name) {
+ 		len = strlen(file_name);
+ 		alloc_len += len + 1;
++        printk("allocation len is %d\n", len);
+ 	}
+ 
+ 	pr_debug("%s: group=%p inode=%p mask=%x\n", __func__, group, inode,
+Only in linux-4.9.3: .get_maintainer.ignore
+Only in linux-4.9.3: .gitattributes
+diff -ru linux-4.9.3/init/main.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/init/main.c
+--- linux-4.9.3/init/main.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/init/main.c	2020-07-01 15:04:32.616000601 -0700
+@@ -87,6 +87,8 @@
+ #include <asm/setup.h>
+ #include <asm/sections.h>
+ #include <asm/cacheflush.h>
++#include <asm/cpufeature.h>
++#include <asm/cpufeatures.h>
+ 
+ static int kernel_init(void *);
+ 
+@@ -534,6 +536,7 @@
+ 	vfs_caches_init_early();
+ 	sort_main_extable();
+ 	trap_init();
++
+ 	mm_init();
+ 
+ 	/*
+diff -ru linux-4.9.3/kernel/exit.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/exit.c
+--- linux-4.9.3/kernel/exit.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/exit.c	2020-07-01 15:04:32.624000601 -0700
+@@ -60,6 +60,11 @@
+ #include <asm/pgtable.h>
+ #include <asm/mmu_context.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ static void __unhash_process(struct task_struct *p, bool group_dead)
+ {
+ 	nr_threads--;
+@@ -883,6 +888,17 @@
+ 	exit_rcu();
+ 	TASKS_RCU(__srcu_read_unlock(&tasks_rcu_exit_srcu, tasks_rcu_i));
+ 
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++#ifdef CONFIG_DEBUG_S2E
++		s2e_printf("detected process %s exit with code %ld\n",
++			tsk->comm,
++			tsk->exit_code);
++#endif
++		s2e_linux_process_exit(tsk->pid, tsk->exit_code);
++	}
++#endif
++
+ 	do_task_dead();
+ }
+ EXPORT_SYMBOL_GPL(do_exit);
+diff -ru linux-4.9.3/kernel/Makefile KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/Makefile
+--- linux-4.9.3/kernel/Makefile	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/Makefile	2020-07-01 15:04:32.616000601 -0700
+@@ -113,6 +113,8 @@
+ 
+ obj-$(CONFIG_HAS_IOMEM) += memremap.o
+ 
++obj-$(CONFIG_S2E) += s2e/
++
+ $(obj)/configs.o: $(obj)/config_data.h
+ 
+ # config_data.h contains the same information as ikconfig.h but gzipped.
+diff -ru linux-4.9.3/kernel/panic.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/panic.c
+--- linux-4.9.3/kernel/panic.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/panic.c	2020-07-01 15:04:32.632000601 -0700
+@@ -26,6 +26,11 @@
+ #include <linux/console.h>
+ #include <linux/bug.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/s2e.h>
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ #define PANIC_TIMER_STEP 100
+ #define PANIC_BLINK_SPD 18
+ 
+@@ -170,6 +175,13 @@
+ 	va_start(args, fmt);
+ 	vsnprintf(buf, sizeof(buf), fmt, args);
+ 	va_end(args);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_kernel_panic(buf, sizeof(buf));
++	}
++#endif
++
+ 	pr_emerg("Kernel panic - not syncing: %s\n", buf);
+ #ifdef CONFIG_DEBUG_BUGVERBOSE
+ 	/*
+Only in KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel: s2e
+diff -ru linux-4.9.3/kernel/sched/core.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/sched/core.c
+--- linux-4.9.3/kernel/sched/core.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/kernel/sched/core.c	2020-07-01 15:04:32.636000601 -0700
+@@ -91,6 +91,10 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/sched.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ DEFINE_MUTEX(sched_domains_mutex);
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
+ 
+@@ -2899,6 +2903,15 @@
+ 	switch_to(prev, next, prev);
+ 	barrier();
+ 
++#ifdef CONFIG_S2E
++	/*
++	 * Save a copy of the current task so that S2E can access it.
++	 *
++	 * NOTE: This is not multi-CPU safe!
++	 */
++	 s2e_current_task = current;
++#endif
++
+ 	return finish_task_switch(prev);
+ }
+ 
+diff -ru linux-4.9.3/lib/Kconfig.debug KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/lib/Kconfig.debug
+--- linux-4.9.3/lib/Kconfig.debug	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/lib/Kconfig.debug	2020-07-01 15:04:32.652000601 -0700
+@@ -403,6 +403,11 @@
+ 	  Say Y here if you are developing drivers or trying to debug and
+ 	  identify kernel problems.
+ 
++config DEBUG_S2E
++    bool "S2E debugging"
++    help
++      Say Y here if you are trying to debug the S2E Linux monitor.
++
+ menu "Memory Debugging"
+ 
+ source mm/Kconfig.debug
+diff -ru linux-4.9.3/mm/mmap.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/mmap.c
+--- linux-4.9.3/mm/mmap.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/mmap.c	2020-07-01 15:04:32.676000601 -0700
+@@ -45,6 +45,10 @@
+ #include <linux/moduleparam.h>
+ #include <linux/pkeys.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ #include <asm/uaccess.h>
+ #include <asm/cacheflush.h>
+ #include <asm/tlb.h>
+@@ -2461,6 +2465,12 @@
+ 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
+ 				 next ? next->vm_start : USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb, start, end);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled) {
++		s2e_linux_unmap(current->pid, start, end);
++	}
++#endif
+ }
+ 
+ /*
+diff -ru linux-4.9.3/mm/mprotect.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/mprotect.c
+--- linux-4.9.3/mm/mprotect.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/mprotect.c	2020-07-01 15:04:32.676000601 -0700
+@@ -33,6 +33,10 @@
+ 
+ #include "internal.h"
+ 
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ /*
+  * For a prot_numa update we only hold mmap_sem for read so there is a
+  * potential race with faulting where a pmd was temporarily none. This
+@@ -481,13 +485,27 @@
+ SYSCALL_DEFINE3(mprotect, unsigned long, start, size_t, len,
+ 		unsigned long, prot)
+ {
+-	return do_mprotect_pkey(start, len, prot, -1);
++	int ret = do_mprotect_pkey(start, len, prot, -1);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !ret) {
++		s2e_linux_mprotect(current->pid, start, len, prot);
++	}
++#endif
++	return ret;
+ }
+ 
+ SYSCALL_DEFINE4(pkey_mprotect, unsigned long, start, size_t, len,
+ 		unsigned long, prot, int, pkey)
+ {
+-	return do_mprotect_pkey(start, len, prot, pkey);
++	int ret = do_mprotect_pkey(start, len, prot, pkey);
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && !ret) {
++		s2e_linux_mprotect(current->pid, start, len, prot);
++	}
++#endif
++	return ret;
+ }
+ 
+ SYSCALL_DEFINE2(pkey_alloc, unsigned long, flags, unsigned long, init_val)
+diff -ru linux-4.9.3/mm/util.c KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/util.c
+--- linux-4.9.3/mm/util.c	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/mm/util.c	2020-07-01 15:04:32.684000601 -0700
+@@ -15,6 +15,10 @@
+ #include <asm/sections.h>
+ #include <asm/uaccess.h>
+ 
++#ifdef CONFIG_S2E
++#include <s2e/linux/linux_monitor.h>
++#endif
++
+ #include "internal.h"
+ 
+ static inline int is_kernel_rodata(unsigned long addr)
+@@ -308,6 +312,13 @@
+ 		if (populate)
+ 			mm_populate(ret, populate);
+ 	}
++
++#ifdef CONFIG_S2E
++	if (s2e_linux_monitor_enabled && (ret != -1)) {
++		s2e_linux_mmap(current->pid, ret, len, prot, flag, pgoff);
++	}
++#endif
++
+ 	return ret;
+ }
+ 
+diff -ru linux-4.9.3/tools/arch/x86/include/asm/cpufeatures.h KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/tools/arch/x86/include/asm/cpufeatures.h
+--- linux-4.9.3/tools/arch/x86/include/asm/cpufeatures.h	2017-01-12 02:41:42.000000000 -0800
++++ KOOBE/s2e/source/s2e-linux-kernel/linux-4.9.3/tools/arch/x86/include/asm/cpufeatures.h	2020-07-01 15:04:32.988000602 -0700
+@@ -124,6 +124,7 @@
+ #define X86_FEATURE_CX16	( 4*32+13) /* CMPXCHG16B */
+ #define X86_FEATURE_XTPR	( 4*32+14) /* Send Task Priority Messages */
+ #define X86_FEATURE_PDCM	( 4*32+15) /* Performance Capabilities */
++#define X86_FEATURE_S2E		( 4*32+16) /* S2E support */
+ #define X86_FEATURE_PCID	( 4*32+17) /* Process Context Identifiers */
+ #define X86_FEATURE_DCA		( 4*32+18) /* Direct Cache Access */
+ #define X86_FEATURE_XMM4_1	( 4*32+19) /* "sse4_1" SSE-4.1 */

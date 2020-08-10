@@ -1,0 +1,5 @@
+syscall(__NR_keyctl, 1, "keyring", 0, 0, 0);
+sleep(1);
+do_keyspray();
+syscall(__NR_keyctl, 3, 0xfffffffffffffffd, 0, 0, 0);
+
