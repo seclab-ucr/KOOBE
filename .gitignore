@@ -1,0 +1,11 @@
+
+debian/
+go/
+go1.14.4.linux-amd64.tar.gz
+gopath/bin/
+s2e/build/
+s2e/images/
+s2e/install/
+s2e/projects/
+create-image.sh
+
