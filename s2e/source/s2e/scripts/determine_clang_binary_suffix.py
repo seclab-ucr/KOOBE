@@ -29,7 +29,7 @@ Note: This script is only really meant to be used by the S2E Makefile. It has
 no real use outside of this.
 """
 
-import platform
+import distro as platform
 import sys
 
 
