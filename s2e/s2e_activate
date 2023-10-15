@@ -27,7 +27,7 @@ s2e_deactivate() {
 # unset irrelvant variables
 s2e_deactivate nondestructive
 
-S2EDIR="/home/wchen130/workplace/KOOBE/s2e"
+S2EDIR="$HOME/KOOBE/s2e"
 export S2EDIR
 
 if [ -z "${S2E_ENV_DISABLE_PROMPT-}" ] ; then

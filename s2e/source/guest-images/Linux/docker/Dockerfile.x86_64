@@ -44,6 +44,7 @@ RUN                                                                             
     apt-get clean && \
     apt-file update || true
 
+RUN git config --global http.sslVerify false
 
 RUN \
     git clone git://sourceware.org/git/systemtap.git && \
