@@ -26,16 +26,25 @@ FROM debian:9.3
 
 MAINTAINER Vitaly Chipounov <vitaly@cyberhaven.io>
 
+RUN sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org/debian-security/|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+
+#RUN deb http://archive.debian.org/debian/ stretch-updates main contrib non-free
+#RUN deb http://archive.debian.org/debian-security/ stretch/updates main contrib non-free
+
+
 RUN                                                                             \
-    apt-get update &&                                                           \
+    apt-get update  &&                                                          \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends   \
     sudo apt-file texinfo flex bison patch python unzip git bc                  \
     bzip2 wget less nano g++ gcc file libc6-dev make                            \
     fakeroot build-essential devscripts libncurses5-dev                         \
     libdw-dev elfutils gettext && \
     apt-get clean && \
-    apt-file update
+    apt-file update || true
 
+RUN git config --global http.sslVerify false
 
 RUN \
     git clone git://sourceware.org/git/systemtap.git && \
