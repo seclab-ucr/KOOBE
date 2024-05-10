@@ -5,6 +5,15 @@ import os
 
 from aeg.command import Command
 
+######################## Helper functions ########################
+DEBUG = False ### set this to True to see output from pdebug
+def pdebug(*args, **kwargs):
+    if not DEBUG:
+        return
+    print( "[DEBUG] "+" ".join(map(str,args)), **kwargs)
+def perror(*args, **kwargs):
+    raise Exception("[ERROR] "+" ".join(map(str,args)), **kwargs)
+##################################################################
 
 class CommonStruct:
     def __init__(self, name, lines, pahole):
@@ -22,12 +31,25 @@ class CommonStruct:
         offsetInfo = m.group(2).strip()
         cols = offsetInfo.split()
         if len(cols) == 2:
-            self._offset = int(cols[0])
-            self._size = int(cols[1])
+            try:
+                if cols[0].find(":") >= 0:
+                    self._offset = int(cols[0][0:cols[0].find(":")])
+                    self._size = int(cols[1])
+                else:
+                    self._offset = int(cols[0])
+                    self._size = int(cols[1])
+            except ValueError:
+                perror("[ERROR] Bad format in line: `"+line+"`")
         elif len(cols) == 1:
             self._size = int(cols[0])
+        elif len(cols) == 3:
+            try:
+                self._offset = int(cols[0][0:cols[0].rfind(':')])
+                self._size = int(cols[2])
+            except:
+                perror("Bad format in line: `"+line+"`")
         else:
-            raise Exception("Error")
+            perror("[ERROR] Unknown format in line: `"+line+"`")
 
     def getOffsetInfo(self):
         return self._offset, self._size
@@ -148,7 +170,16 @@ class Field:
         self._size = 0
 
         line = line.strip()
+        if DEBUG:
+            self._line = line
         m = re.search('(.+)/\*\s(.+)\s+\*/', line)
+        if m is None:
+            self._type = "Alignment"
+            self._name = line[0:line.find(" ")]
+            self._reference = None
+            pdebug("Encountered alignment declaration with line: `"+line+"`")
+            return
+        
         define = m.group(1).strip()
         offsetInfo = m.group(2).strip()
         cols = offsetInfo.split()
@@ -161,10 +192,10 @@ class Field:
             elif len(cols) == 1:
                 self._size = int(cols[0])
             else:
-                raise Exception("Error")
+                perror("Error")
         if '*' in define:
             self._isPointer = True
-        if '(' in define:
+        if define[define.find(" "):].strip().startswith("(*"):
             self._type = "Function"
             self._name = ' '.join(define.split())
             self._isFunction = True
@@ -384,8 +415,9 @@ class Pahole:
         return None
 
     def analyzeSize(self):
-        complete = subprocess.run(["pahole", "-s", self._vmlinux],
+        complete = subprocess.run(["pahole", "-s", "--structs", self._vmlinux],
                                   stdout=subprocess.PIPE)
+        total_num_obj = 0
         for line in complete.stdout.split(b'\n'):
             cols = line.split()
             if len(cols) != 3:
@@ -396,9 +428,11 @@ class Pahole:
             if esize not in self._bins:
                 self._bins[esize] = list()
             self._bins[esize].append((name, size))
+            total_num_obj += 1
+        pdebug("Found %d objects in size analysis!" % total_num_obj)
 
     def analyzeType(self):
-        complete = subprocess.run(["pahole", self._vmlinux],
+        complete = subprocess.run(["pahole", "--structs", self._vmlinux],
                                   stdout=subprocess.PIPE)
         start = False
         content = None
@@ -409,13 +443,18 @@ class Pahole:
                 content = [line]
                 continue
             if start:
-                content.append(line)
-                if line.startswith('};'):
+                m = re.search("\}( ?__attribute__\((.+)\))?\;", line)
+                #if line.startswith('};'):
+                if m is not None and len(line) > 0:
                     struct = Struct(content, self)
                     self._structs[struct.getName()] = struct
                     start = False
                     if struct.isVariable():
                         self._special[struct.getName()] = struct
+                else:
+                    if len(line) > 0:
+                        content.append(line)
+        pdebug("Found %d objects in type analysis!" % len(self._structs))
 
     def getOffsetInfo(self, className):
         complete = subprocess.run(["pahole", "-C", className, self._vmlinux],

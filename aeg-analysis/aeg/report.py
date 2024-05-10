@@ -130,8 +130,11 @@ class Report:
                         continue
                     funCall = sym.name
                     target = inst.address
-                    fun_addr = int(inst.op_str, 16)
-                    sym = self._kernel.find_symbol(fun_addr, fuzzy=False)
+                    try:
+						fun_addr = int(inst.op_str, 16)
+                    except:
+						continue
+					sym = self._kernel.find_symbol(fun_addr, fuzzy=False)
                     retType = self.getType(sym.name)
                     self._funCall = sym.name
                     break

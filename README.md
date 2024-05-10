@@ -1,3 +1,7 @@
+# IMPORTANT MESSAGE TO REPRO THIS CODE
+
+You must make sure you use the Ubuntu 18.04.6 LTS but **DO NOT DOWNLOAD UPDATES** when you install the OS. Make sure you use [this](https://releases.ubuntu.com/18.04/ubuntu-18.04.6-desktop-amd64.iso) iso. Make sure you are in your `$HOME` directory when cloning this repo or change `S2EDIR` in `./s2e/s2e_activate:30` accordingly.
+
 # KOOBE
 Towards Facilitating Exploit Generation of Kernel Out-Of-Bounds Write Vulnerabilities
 

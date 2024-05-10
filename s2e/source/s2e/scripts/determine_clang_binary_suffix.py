@@ -29,7 +29,7 @@ Note: This script is only really meant to be used by the S2E Makefile. It has
 no real use outside of this.
 """
 
-import platform
+import distro as dis
 import sys
 
 
@@ -79,7 +79,7 @@ def _get_ubuntu_version(version_string):
 
 def main():
     """The main function."""
-    distro, version, _ = platform.linux_distribution()
+    [distro, version] = [dis.id(), dis.version()]
 
     clang_ver_to_download = None
     if distro.lower() == 'debian':

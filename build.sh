@@ -12,5 +12,5 @@ source common.sh
 
 # build kernel
 sudo chmod ugo+r /boot/vmlinu*
-/bin/bash -c "source ${VIRTUAL_ENV} && cd ${S2EDIR} && s2e image_build debian-9.2.1-x86_64"
+/bin/bash -c "source ${VIRTUAL_ENV} && cd ${S2EDIR} && s2e image_build debian-9.2.1-x86_64 --gui"
 

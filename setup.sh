@@ -6,7 +6,7 @@ sudo apt-get install python3-dev libffi-dev build-essential virtualenvwrapper de
 
 source common.sh
 
-virtualenv ${KOOBE} --python=$(which python3)
+virtualenv ${KOOBE} --python=$(which python3.8)
 # install s2e-env
 /bin/bash -c "source ${VIRTUAL_ENV} && cd s2e/source/s2e-env && pip install ."
 echo "S2EDIR=\"${S2EDIR}\"" >> $VIRTUAL_ENV
